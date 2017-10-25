@@ -1,0 +1,847 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1cm
+\topmargin 1cm
+\rightmargin 1cm
+\bottommargin 1cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Reinforcement learning ( CS6700 )
+\begin_inset Newline newline
+\end_inset
+
+Written assignment #2
+\end_layout
+
+\begin_layout Author
+Aravind S
+\begin_inset Newline newline
+\end_inset
+
+EE14B013
+\end_layout
+
+\begin_layout Date
+17th Feb.
+ 2017
+\end_layout
+
+\begin_layout Section
+Question 1
+\end_layout
+
+\begin_layout Standard
+Here we have a gridworld of size 
+\begin_inset Formula $10x10$
+\end_inset
+
+.
+ Since the agent can be in any square, we have a total of 
+\begin_inset Formula $100$
+\end_inset
+
+ states.
+ There is a start state from which the agent starts moving and there is
+ a terminal state ( goal state ) which marks the end of the agent's journey.
+ From each square, four actions can be taken - left, right, up and down.
+ All are deterministic i.e there is no stochasticity in the environment regarding
+ actions.
+ So when the agent decides to move left, he will move to one square on his
+ left ( if it is possible ).
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+A bandit problem is a simpler version of the full RL problem where the goal
+ is to find the best arm or the optimal arm which gives the highest expected
+ reward when pulled.
+ Since there are totally 
+\begin_inset Formula $100$
+\end_inset
+
+ states, we can have 
+\begin_inset Formula $100$
+\end_inset
+
+ bandits - one for each state.
+ Each bandit has 
+\begin_inset Formula $4$
+\end_inset
+
+ arms corresponding to the 
+\begin_inset Formula $4$
+\end_inset
+
+ possible actions - 
+\begin_inset Formula $\{left,\,right,\,up,\,down\}$
+\end_inset
+
+ which can be taken.
+ For squares along the edge of the world, only 
+\begin_inset Formula $3$
+\end_inset
+
+ actions can be taken - this means that the Q-value of the other action
+ will remain 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ There is a non-zero reward of 
+\begin_inset Formula $1$
+\end_inset
+
+ if the agent reaches the goal state, otherwise there is no reward given.
+ Also, there is a discount factor 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ for the returns.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Assume for every state 
+\begin_inset Formula $s$
+\end_inset
+
+, there is a bandit for estimating 
+\begin_inset Formula $Q_{s}(a)$
+\end_inset
+
+ where 
+\begin_inset Formula $a\,\epsilon\,\{left,\,right,\,up,\,down\}$
+\end_inset
+
+.
+ Each 
+\begin_inset Formula $Q_{s}(a)$
+\end_inset
+
+ is initialised to 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ From the start state, lets follow a sufficiently exploratory policy - equiproba
+ble random policy or 
+\begin_inset Formula $\epsilon-greedy$
+\end_inset
+
+ policy and generate trajectories.
+ Update rule is as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Q_{s}(a) & \leftarrow Q_{s}(a)+\alpha(r+\gamma\frac{max}{a'}Q_{s'}(a')-Q_{s}(a))
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Here 
+\begin_inset Formula $s$
+\end_inset
+
+ is the current state and we reach the next state 
+\begin_inset Formula $s'$
+\end_inset
+
+ after taking an action 
+\begin_inset Formula $a$
+\end_inset
+
+ in the trajectory.
+ After sampling sufficient number of trajectories and following the above
+ update rule, the estimates of 
+\begin_inset Formula $Q$
+\end_inset
+
+ converge to the optimal 
+\begin_inset Formula $Q$
+\end_inset
+
+ values.
+ Note that this is very similar to Q-learning.
+ Instead of using an action-value function 
+\begin_inset Formula $Q(s,a)$
+\end_inset
+
+, we are using a number of 
+\begin_inset Formula $Q_{s}(a)$
+\end_inset
+
+ - each of them is a bandit for all states 
+\begin_inset Formula $s$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Since, Q-learning is off-policy, it doesn't matter what behaviour policy
+ we are following.
+ We have to make sure, sufficient exploration is done and 
+\begin_inset Formula $\alpha's$
+\end_inset
+
+ obey stochastic averaging rules to ensure convergence and correctness of
+ the estimate.
+\end_layout
+
+\begin_layout Section
+Question 2
+\end_layout
+
+\begin_layout Standard
+Here, we have a 5-arm bandit problem where we know the expected payoffs
+ of all the arms before-hand.
+ But we don't know the mapping between each arm to its expected payoff.
+ Expected payoffs are - 
+\begin_inset Formula $4.6,\,3.1,\,2.3,\,1.2,\,0.9$
+\end_inset
+
+.
+ Since, we know the expected payoffs i.e 
+\begin_inset Formula $q*(a)$
+\end_inset
+
+ for every arm we can design a small variant of UCB for this case.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\varDelta_{i}=q*(a*)-q*(a_{i})$
+\end_inset
+
+ where 
+\begin_inset Formula $a_{i}$
+\end_inset
+
+ denotes the arm pulled at the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ time step.
+ Now, this term can be bounded using the maximum of all possible 
+\begin_inset Formula $\varDelta_{i}'s$
+\end_inset
+
+.
+ Here, it can be replaced with 
+\begin_inset Formula $4.6-0.9=3.7$
+\end_inset
+
+.
+ This can result in better bounds than UCB.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Another variant of UCB is UCB-improved.
+ It considers 
+\begin_inset Formula $\varDelta_{i}$
+\end_inset
+
+ also in the maximisation part i.e we choose the arm 
+\begin_inset Formula $j$
+\end_inset
+
+ which maximises 
+\begin_inset Formula $Q_{j}+\sqrt{\frac{2logt}{n_{j}}}\varDelta_{j}$
+\end_inset
+
+.
+ Again bounding 
+\begin_inset Formula $\varDelta_{j}$
+\end_inset
+
+ in a similar fashion as mentioned above we can achieve better bounds than
+ UCB.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In UCB, the term 
+\begin_inset Formula $u_{j}=\sqrt{\frac{2logt}{n_{j}}}$
+\end_inset
+
+ is a measure of uncertainity in the estimate of 
+\begin_inset Formula $Q_{j}$
+\end_inset
+
+.
+ If we take an action more times, the estimates converge and the uncertainity
+ in its measurement decreases.
+ Since, we need to optimise regret we need to find the best action in the
+ least possible time steps as we can then choose the same action again greedily
+ to obtain zero regrets till the end.
+ Suppose 
+\begin_inset Formula $u_{j}$
+\end_inset
+
+ falls below 
+\begin_inset Formula $0.5(4.6-3.1)=0.75$
+\end_inset
+
+, then the action with the highest estimate of 
+\begin_inset Formula $Q$
+\end_inset
+
+ is the optimal action and we can be sure that its expected payoff is 
+\begin_inset Formula $4.6$
+\end_inset
+
+.
+ This is because in the worst case, arm with 
+\begin_inset Formula $3.1$
+\end_inset
+
+ payoff can have an estimate 
+\begin_inset Formula $<0.75+3.1=3.85$
+\end_inset
+
+ and arm with 
+\begin_inset Formula $4.6$
+\end_inset
+
+ payoff can have an estimate 
+\begin_inset Formula $>4.6-0.75=3.85$
+\end_inset
+
+ and in this case the arm with the higher estimate of 
+\begin_inset Formula $Q$
+\end_inset
+
+ is the one with 
+\begin_inset Formula $4.6$
+\end_inset
+
+ payoff and hence is the optimal arm.
+ Since, we have provided worst-case guarantees, by sampling each action
+ sufficient number of times we can obtain better regret bounds.
+ We need to make sure 
+\begin_inset Formula $u_{j}<0.75$
+\end_inset
+
+ i.e 
+\begin_inset Formula $n*=1+ceil(\frac{2logt}{0.75^{2}})$
+\end_inset
+
+ for all actions 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ We need to sample each arm 
+\begin_inset Formula $n*$
+\end_inset
+
+ times as we don't know the mapping between arms and payoffs.
+ After pulling each arm 
+\begin_inset Formula $n*$
+\end_inset
+
+times, we would have accumulated some regret but after that we will know
+ which is the optimal arm.
+ So from 
+\begin_inset Formula $t=n*k+1$
+\end_inset
+
+ where 
+\begin_inset Formula $k=5$
+\end_inset
+
+ - denotes the number of arms, we can pull the optimal arm and we will obtain
+ 
+\begin_inset Formula $zero$
+\end_inset
+
+ regret.
+ This is another way to minimize regret.
+\end_layout
+
+\begin_layout Section
+Question 3
+\end_layout
+
+\begin_layout Standard
+Here, we have a slightly different bandit set up.
+ There is some unknown reward distribution for each arm.
+ When we pull an arm, we obtain a sample from that distribution as the reward.
+ Now when the agent picks an arm, the environment reveals the rewards which
+ were chosen ( samples from all the distributions ).
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Also, the definition of regret is modified here.
+ Let 
+\begin_inset Formula $t_{i}$
+\end_inset
+
+ denote the arm which is pulled at 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ time step, 
+\begin_inset Formula $k$
+\end_inset
+
+ denote the total number of arms and 
+\begin_inset Formula $r_{i}$
+\end_inset
+
+ denote the reward samples of all the arms - vector of 
+\begin_inset Formula $k$
+\end_inset
+
+ values.
+ Regret in the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ time step is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\varDelta_{i}= & \frac{max}{a}(r_{i}[a])-r_{i}[t_{i}]
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $r_{i}[j]$
+\end_inset
+
+ denotes the reward sample of the 
+\begin_inset Formula $j^{th}$
+\end_inset
+
+ arm in the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ time step.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The existing algorithms works well in this setting because when we ignore
+ the extra information which the environment gives us about other actions,
+ it reduces to the original bandit problem with a modified regret.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Since we know the reward samples of all arms in each time step, we can utilise
+ that information and do something better.
+ From UCB, we need to pull the arm which maximises 
+\begin_inset Formula $Q_{j}+\sqrt{\frac{2logt}{n_{j}}}$
+\end_inset
+
+ but since we obtain information about all arms, we can assume that all
+ 
+\begin_inset Formula $n_{j}'s$
+\end_inset
+
+ are same.
+ This means that we need to pull the arm which maximises 
+\begin_inset Formula $Q_{j}+constant$
+\end_inset
+
+ i.e act greedily w.r.t current estimate.
+ In that case, after 
+\begin_inset Formula $N$
+\end_inset
+
+ time-steps ( 
+\begin_inset Formula $N$
+\end_inset
+
+ is large so that the policy converges ), when the policy i.e 
+\begin_inset Formula $\frac{argmax}{j}Q_{j}$
+\end_inset
+
+ converges the greedy policy is the optimal policy.
+ Once the optimal policy is found, we pull the arm which gives the maximum
+ expected reward and hence in an expected sense, we accumulate 
+\begin_inset Formula $zero$
+\end_inset
+
+ regret.
+ Expected sense means - even though we determine the optimal arm the sample
+ drawn from that arm's distribution may not be highly rewarding in every
+ time step.
+ But over a number of time steps, the expected regret is zero i.e 
+\begin_inset Formula $\varDelta_{i}$
+\end_inset
+
+ will not be 
+\begin_inset Formula $zero$
+\end_inset
+
+ but 
+\begin_inset Formula $E[\varDelta_{i}]=0$
+\end_inset
+
+ after 
+\begin_inset Formula $N$
+\end_inset
+
+ time-steps.
+\end_layout
+
+\begin_layout Section
+Question 4
+\end_layout
+
+\begin_layout Standard
+In this experiment, the initial estimate of 
+\begin_inset Formula $Q$
+\end_inset
+
+ for each arm is set to some value higher than the reward obtained when
+ the arm is pulled.
+ Say 
+\begin_inset Formula $Q^{i}$
+\end_inset
+
+ denote the 
+\begin_inset Formula $Q$
+\end_inset
+
+ for the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ arm and 
+\begin_inset Formula $Q_{j}^{i}$
+\end_inset
+
+ denote the 
+\begin_inset Formula $j^{th}$
+\end_inset
+
+ estimate for 
+\begin_inset Formula $Q^{i}$
+\end_inset
+
+.
+ And say there are totally 
+\begin_inset Formula $n$
+\end_inset
+
+ arms.
+ Here,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Q_{1}^{i}= & 5\,for\,i=1,2,..,n
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+A greedy policy is followed here so as to learn which is the best arm to
+ pull and hence maximise the reward obtained.
+ Since the reward obtained after pulling an arm is just 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $1$
+\end_inset
+
+, the initial estimate of 
+\begin_inset Formula $Q$
+\end_inset
+
+ is highly optimistic i.e it is expecting a high reward when an arm is pulled.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Say initially we chose arm 
+\begin_inset Formula $1$
+\end_inset
+
+, and we obtain a reward 
+\begin_inset Formula $R_{2}^{1}$
+\end_inset
+
+ which can be 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $1$
+\end_inset
+
+, now by stochastic averaging rule, 
+\begin_inset Formula $Q_{2}^{1}=Q_{2}^{1}+\alpha(R_{2}^{1}-Q_{2}^{1})$
+\end_inset
+
+.
+ Since the term 
+\begin_inset Formula $(R_{2}^{1}-Q_{2}^{1})$
+\end_inset
+
+ is negative, 
+\begin_inset Formula $Q_{2}^{1}<Q_{1}^{1}$
+\end_inset
+
+ i.e estimate 
+\begin_inset Formula $Q^{1}$
+\end_inset
+
+ reduces.
+ As we are following a greedy policy other 
+\begin_inset Formula $Q^{i}\,for\,i\,\neq1$
+\end_inset
+
+will be higher than 
+\begin_inset Formula $Q^{1}$
+\end_inset
+
+ and hence other arms will be pulled in the successive plays.
+ This means there is an inherent tendency for exploration and each arm will
+ be pulled many times ( lot of exploration in the early stages ) before
+ the estimates converge.
+ Due to this exploration inspite of following a greedy policy, there are
+ lot of oscillations in the early stages.
+ Once sufficient exploration is done, the value estimates start converging
+ and 
+\begin_inset Formula $\%Optimal\,action$
+\end_inset
+
+ increases.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+So, due to this optimistic value initialisation, this method performs worse
+ ( lot of exploration ) in the early stages when compared to a realistic
+ initilisation ( 
+\begin_inset Formula $Q_{1}^{i}=0\,for\,i=1,2,..,n$
+\end_inset
+
+ ) and an 
+\begin_inset Formula $\epsilon-greedy$
+\end_inset
+
+ policy.
+ This trick works well for stationary problems as we just need to find the
+ optimal action once and then exploit it.
+ For non-stationary problems, the distribution of rewards keep changing
+ and hence we need to explore continuously as a non-optimal action can become
+ an optimal one as time progresses.
+\end_layout
+
+\begin_layout Section
+Question 5
+\end_layout
+
+\begin_layout Standard
+If the step-size parameters, 
+\begin_inset Formula $\alpha_{n}$
+\end_inset
+
+ are not constant, then:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Q_{n+1}= & Q_{n}+\alpha_{n}(R_{n}-Q_{n})=\alpha_{n}R_{n}+(1-\alpha_{n})Q_{n}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Q_{n+1}= & \alpha_{n}R_{n}+(1-\alpha_{n})(\alpha_{n-1}R_{n-1}+(1-\alpha_{n-1})Q_{n-1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Q_{n+1}= & \alpha_{n}R_{n}+(1-\alpha_{n})\alpha_{n-1}R_{n-1}+(1-\alpha_{n})(1-\alpha_{n-1})(\alpha_{n-2}R_{n-2}+(1-\alpha_{n-2})Q_{n-2})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Q_{n+1}= & \sum_{j=1}^{n}\,\{\prod_{i=j+1}^{n}(1-\alpha_{i})\}\alpha_{j}R_{j}+\prod_{i=1}^{n}(1-\alpha_{i})Q_{1}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+From the above equation, it is clear that in the estimate 
+\begin_inset Formula $Q_{n}$
+\end_inset
+
+ the 
+\begin_inset Formula $j^{th}$
+\end_inset
+
+ reward is given a weight: 
+\begin_inset Formula $\alpha_{j}\{\prod_{i=j+1}^{n}(1-\alpha_{i})\}$
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document

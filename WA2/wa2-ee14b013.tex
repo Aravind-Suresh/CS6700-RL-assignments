@@ -1,0 +1,136 @@
+%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[12pt,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=1cm,bmargin=1cm,lmargin=1cm,rmargin=1cm}
+\usepackage{amsmath}
+\usepackage{babel}
+\begin{document}
+
+\title{Reinforcement learning ( CS6700 )\\
+Written assignment \#1}
+
+\author{Aravind S\\
+EE14B013}
+
+\date{17th Feb. 2017}
+\maketitle
+
+\section{Question 1}
+
+Here we have a gridworld of size $10x10$. Since the agent can be
+in any square, we have a total of $100$ states. There is a start
+state from which the agent starts moving and there is a terminal state
+( goal state ) which marks the end of the agent's journey. From each
+square, four actions can be taken - left, right, up and down. All
+are deterministic i.e there is no stochasticity in the environment
+regarding actions. So when the agent decides to move left, he will
+move to one square on his left ( if it is possible ).\\
+\\
+A bandit problem is a simpler version of the full RL problem where
+the goal is to find the best arm or the optimal arm which gives the
+highest expected reward when pulled. Since there are totally $100$
+states, we can have $100$ bandits - one for each state. Each bandit
+has $4$ arms corresponding to the $4$ possible actions - $\{left,\,right,\,up,\,down\}$
+which can be taken. For squares along the edge of the world, only
+$3$ actions can be taken - this means that the Q-value of the other
+action will remain $0$. There is a non-zero reward of $1$ if the
+agent reaches the goal state, otherwise there is no reward given.
+Also, there is a discount factor $\gamma$ for the returns.\\
+\\
+Assume for every state $s$, there is a bandit for estimating $Q_{s}(a)$
+where $a\,\epsilon\,\{left,\,right,\,up,\,down\}$. Each $Q_{s}(a)$
+is initialised to $0$. From the start state, lets follow a sufficiently
+exploratory policy - equiprobable random policy or $\epsilon-greedy$
+policy and generate trajectories. Update rule is as follows:
+
+\begin{align*}
+Q_{s}(a) & \leftarrow Q_{s}(a)+\alpha(r+\frac{max}{a'}Q_{s'}(a')-Q_{s}(a))
+\end{align*}
+\\
+\\
+Here $s$ is the current state and we reach the next state $s'$ after
+taking an action $a$ in the trajectory. After sampling sufficient
+number of trajectories and following the above update rule, the estimates
+of $Q$ converge to the optimal $Q$ values. Note that this is very
+similar to Q-learning. Instead of using an action-value function $Q(s,a)$,
+we are using a number of $Q_{s}(a)$ - each of them is a bandit for
+all states $s$.\\
+\\
+Since, Q-learning is off-policy, it doesn't matter what behaviour
+policy we are following. We have to make sure, sufficient exploration
+is done and $\alpha's$ obey stochastic averaging rules to ensure
+convergence and correctness of the estimate.
+
+\section{Question 2}
+
+
+\section{Question 3}
+
+\section{Question 4}
+
+In this experiment, the initial estimate of $Q$ for each arm is set
+to some value higher than the reward obtained when the arm is pulled.
+Say $Q^{i}$ denote the $Q$ for the $i^{th}$ arm and $Q_{j}^{i}$
+denote the $j^{th}$ estimate for $Q^{i}$. And say there are totally
+$n$ arms. Here,
+
+\begin{align*}
+Q_{1}^{i}= & 5\,for\,i=1,2,..,n
+\end{align*}
+\\
+\\
+A greedy policy is followed here so as to learn which is the best
+arm to pull and hence maximise the reward obtained. Since the reward
+obtained after pulling an arm is just $0$ or $1$, the initial estimate
+of $Q$ is highly optimistic i.e it is expecting a high reward when
+an arm is pulled.\\
+\\
+Say initially we chose arm $1$, and we obtain a reward $R_{2}^{1}$
+which can be $0$ or $1$, now by stochastic averaging rule, $Q_{2}^{1}=Q_{2}^{1}+\alpha(R_{2}^{1}-Q_{2}^{1})$.
+Since the term $(R_{2}^{1}-Q_{2}^{1})$ is negative, $Q_{2}^{1}<Q_{1}^{1}$
+i.e estimate $Q^{1}$ reduces. As we are following a greedy policy
+other $Q^{i}\,for\,i\,\neq1$will be higher than $Q^{1}$ and hence
+other arms will be pulled in the successive plays. This means there
+is an inherent tendency for exploration and each arm will be pulled
+many times ( lot of exploration in the early stages ) before the estimates
+converge. Due to this exploration inspite of following a greedy policy,
+there are lot of oscillations in the early stages. Once sufficient
+exploration is done, the value estimates start converging and $\%Optimal\,action$
+increases.\\
+\\
+So, due to this optimistic value initialisation, this method performs
+worse ( lot of exploration ) in the early stages when compared to
+a realistic initilisation ( $Q_{1}^{i}=0\,for\,i=1,2,..,n$ ) and
+an $\epsilon-greedy$ policy. This trick works well for stationary
+problems as we just need to find the optimal action once and then
+exploit it. For non-stationary problems, the distribution of rewards
+keep changing and hence we need to explore continuously as a non-optimal
+action can become an optimal one as time progresses.
+
+\section{Question 5}
+
+If the step-size parameters, $\alpha_{n}$ are not constant, then:
+
+\begin{align*}
+Q_{n+1}= & Q_{n}+\alpha_{n}(R_{n}-Q_{n})=\alpha_{n}R_{n}+(1-\alpha_{n})Q_{n}
+\end{align*}
+
+\begin{align*}
+Q_{n+1}= & \alpha_{n}R_{n}+(1-\alpha_{n})(\alpha_{n-1}R_{n-1}+(1-\alpha_{n-1})Q_{n-1})
+\end{align*}
+
+\begin{align*}
+Q_{n+1}= & \alpha_{n}R_{n}+(1-\alpha_{n})\alpha_{n-1}R_{n-1}+(1-\alpha_{n})(1-\alpha_{n-1})(\alpha_{n-2}R_{n-2}+(1-\alpha_{n-2})Q_{n-2})
+\end{align*}
+
+\begin{align*}
+Q_{n+1}= & \sum_{j=1}^{n}\,\{\prod_{i=j+1}^{n}(1-\alpha_{i})\}\alpha_{j}R_{j}+\prod_{i=1}^{n}(1-\alpha_{i})Q_{1}
+\end{align*}
+\\
+\\
+From the above equation, it is clear that in the estimate $Q_{n}$
+the $j^{th}$ reward is given a weight: $\alpha_{j}\{\prod_{i=j+1}^{n}(1-\alpha_{i})\}$.
+\end{document}

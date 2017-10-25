@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="generator" content="http://www.nongnu.org/elyxer/"/>
+<meta name="create-date" content="2017-03-15"/>
+<link rel="stylesheet" href="http://elyxer.nongnu.org/lyx.css" type="text/css" media="all"/>
+<title>Reinforcement learning ( CS6700 )Written assignment #3</title>
+</head>
+<body>
+<div id="globalWrapper">
+<h1 class="title">
+Reinforcement learning ( CS6700 )<br/>
+Written assignment #3
+</h1>
+<h2 class="author">
+Aravind S<br/>
+EE14B013
+</h2>
+<h2 class="Date">
+13th Mar. 2017
+</h2>
+<h1 class="Section">
+<a class="toc" name="toc-Section-1">1</a> Problem 1
+</h1>
+<div class="Unindented">
+No discounting here. Easy!
+</div>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-1.1">1.1</a> Part (a)
+</h2>
+<div class="Unindented">
+Monte-Carlo estimates are average of rewards observed from a particular state ( from all episodes ) till termination. Multiple visits to a state are ignored as we are doing first-visit Monte-Carlo.<br/>
+<br/>
+For state <span class="formula"><i>B</i></span>,<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>V</i>(<i>B</i>)
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator">(1) + (0 + 2) + (0 + 0 + 1) + (0 + 2) + (0 + 0 + 1) + (0 + 2) + (1) + (1) + (1) + (1)</span><span class="ignored">)/(</span><span class="denominator">10</span><span class="ignored">)</span></span> = 1.30
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+<br/>
+For state <span class="formula"><i>A</i></span>,<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>V</i>(<i>A</i>)
+</span>
+<span class="arraycell align-l">
+ = <span class="fraction"><span class="ignored">(</span><span class="numerator">(0 + 1) + (2) + (0 + 0 + 2) + (0 + 0 + 0 + 1) + (2) + (0 + 1) + (2) + (0 + 1)</span><span class="ignored">)/(</span><span class="denominator">8</span><span class="ignored">)</span></span> = 1.50
+</span>
+
+</span>
+</span>
+</div>
+
+</div>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-1.2">1.2</a> Part (b)
+</h2>
+<div class="Unindented">
+Based on possible transitions we can obtain an estimate of transition probabilities. The possible transitions here include <span class="formula"><i>A</i> → <i>B</i></span>, <span class="formula"><i>A</i> → <i>T</i></span>, <span class="formula"><i>B</i> → <i>A</i></span> and <span class="formula"><i>B</i> → <i>T</i></span> where <span class="formula"><i>T</i></span> is a terminal state. We can build a transition matrix from the episodes.
+</div>
+<div class="Indented">
+<table>
+<tr>
+<td align="center" valign="top">
+
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>A</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>B</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>T</i></span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>A</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">6</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">4</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>B</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">5</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">7</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>T</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+
+</table>
+<br/>
+<br/>
+where <span class="formula"><i>a</i><sub><i>ij</i></sub>(<i>i</i><sup><i>th</i></sup><i>row</i>, <i>j</i><sup><i>th</i></sup><i>column</i>)</span> denotes the number of transitions from <span class="formula"><i>i</i> → <i>j</i></span>.<br/>
+<br/>
+Now, <span class="formula"><i>p</i>(<i>s</i><sub><i>t</i> + 1</sub> = <i>j</i> | <i>s</i><sub><i>t</i></sub> = <i>i</i>) = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>n</i>(<i>s</i><sub><i>t</i> + 1</sub> = <i>j</i> | <i>s</i><sub><i>t</i></sub> = <i>i</i>)</span><span class="ignored">)/(</span><span class="denominator"><i>n</i>(<i>s</i><sub><i>t</i></sub> = <i>i</i>)</span><span class="ignored">)</span></span></span> where <span class="formula"><i>n</i>(...)</span> denotes number of occurences of <span class="formula">(...)</span> in the episodes. Calculating this for all possible transitions we get,<br/>
+<br/>
+<table>
+<tr>
+<td align="center" valign="top">
+Transition
+</td>
+<td align="center" valign="top">
+Probability
+</td>
+<td align="center" valign="top">
+Value
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>A</i> → <i>B</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>p</i>(<i>s</i><sub><i>t</i> + 1</sub> = <i>B</i> | <i>s</i><sub><i>t</i></sub> = <i>A</i>)</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0.6000</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>A</i> → <i>T</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>p</i>(<i>s</i><sub><i>t</i> + 1</sub> = <i>T</i> | <i>s</i><sub><i>t</i></sub> = <i>A</i>)</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0.4000</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>B</i> → <i>A</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>p</i>(<i>s</i><sub><i>t</i> + 1</sub> = <i>A</i> | <i>s</i><sub><i>t</i></sub> = <i>B</i>)</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0.4167</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>B</i> → <i>T</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>p</i>(<i>s</i><sub><i>t</i> + 1</sub> = <i>T</i> | <i>s</i><sub><i>t</i></sub> = <i>B</i>)</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0.5833</span>
+</td>
+
+</tr>
+
+</table>
+<br/>
+<br/>
+<br/>
+We can build a transition matrix for rewards as shown below.<br/>
+<br/>
+<table>
+<tr>
+<td align="center" valign="top">
+
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>A</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>B</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>T</i></span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>A</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">0 + 0 + 0 + 0 + 0 + 0 + 0</span><span class="ignored">)/(</span><span class="denominator">7</span><span class="ignored">)</span></span> = 0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">2 + 2 + 2 + 2</span><span class="ignored">)/(</span><span class="denominator">4</span><span class="ignored">)</span></span> = 2</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>B</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">0 + 0 + 0 + 0 + 0</span><span class="ignored">)/(</span><span class="denominator">5</span><span class="ignored">)</span></span> = 0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><span class="fraction"><span class="ignored">(</span><span class="numerator">1 + 1 + 1 + 1 + 1 + 1 + 1</span><span class="ignored">)/(</span><span class="denominator">7</span><span class="ignored">)</span></span> = 1</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>T</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+
+</table>
+<br/>
+<br/>
+where <span class="formula"><i>R</i><sub><i>ij</i></sub>(<i>i</i><sup><i>th</i></sup><i>row</i>, <i>j</i><sup><i>th</i></sup><i>column</i>)</span> denotes the average reward obtained for transition <span class="formula"><i>i</i> → <i>j</i></span>.<br/>
+<br/>
+The state-transition diagram is shown below.<br/>
+<br/>
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+[ − 
+</span>
+<span class="arraycell align-l">
+gt;, 
+</span>
+<span class="arraycell align-l">
+gt; = stealth’, auto, nodedistance = 2.8cm, semithick]<span class="unknown">\tikzstyle</span>everystate = [text = black]<span class="unknown">\node</span>[state](A)A;<span class="unknown">\node</span>[state](B)[aboverightof = A]B;<span class="unknown">\node</span>[state](T)[belowrightof = B]T;<span class="unknown">\path</span>(A)edgenode[right]0.6, 0(B)edgenode0.4, 2(T)(B)edge[bendright]node[left]0.4167, 0(A)edge[bendleft]node0.5833, 1(T);
+</span>
+
+</span>
+</span> 
+</div>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-1.3">1.3</a> Part (c)
+</h2>
+<div class="Unindented">
+Batch <span class="formula"><i>TD</i>(0)</span> converges to the certainty-equivalence estimate for the Markov model of the system. The Markov model is constructed based on the given episodes only ( shown in part (b) ).<br/>
+<br/>
+<span class="formula"><i>V</i>(<i>T</i>) = 0.</span> Based on transition probabilities,<br/>
+<br/>
+<span class="formula"><i>V</i>(<i>B</i>) = 0.5833(<i>R</i>(<i>B</i>, <i>T</i>) + <i>V</i>(<i>T</i>)) + 0.4167(<i>R</i>(<i>B</i>, <i>A</i>) + <i>V</i>(<i>A</i>))</span><br/>
+<br/>
+<span class="formula"><i>V</i>(<i>A</i>) = 0.4(<i>R</i>(<i>A</i>, <i>T</i>) + <i>V</i>(<i>T</i>)) + 0.6(<i>R</i>(<i>A</i>, <i>B</i>) + <i>V</i>(<i>B</i>))</span><br/>
+<br/>
+Solving the above system of equations, we get,<br/>
+<br/>
+<table>
+<tr>
+<td align="center" valign="top">
+State <span class="formula"><i>s</i></span>
+</td>
+<td align="center" valign="top">
+Value <span class="formula"><i>V</i>(<i>s</i>)</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>A</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1.5333</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>B</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1.2222</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>T</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+
+</table>
+
+</div>
+<h1 class="Section">
+<a class="toc" name="toc-Section-2">2</a> Problem 2
+</h1>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-2.1">2.1</a> Part (a)
+</h2>
+<div class="Unindented">
+State-space <span class="formula"><i>S</i> = {<i>laughter</i> ( <i>L</i> ),  <i>silent</i> ( <i>S</i> )}</span><br/>
+<br/>
+Actions <span class="formula"><i>A</i> = {<i>playing</i> <i>organ</i> (<i>O</i>),  <i>lighting</i> <i>incense</i> (<i>I</i>)}</span><br/>
+<br/>
+The state transition diagram is given below.<br/>
+<br/>
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+[ − 
+</span>
+<span class="arraycell align-l">
+gt;, 
+</span>
+<span class="arraycell align-l">
+gt; = stealth’, auto, nodedistance = 2.8cm, semithick]<span class="unknown">\tikzstyle</span>everystate = [text = black]<span class="unknown">\node</span>[state](L)L;<span class="unknown">\node</span>[state](S)[aboverightof = A]S;<span class="unknown">\path</span>(L)edge[loopabove]nodeI,  − 1(L)edge[right]nodeO,  + 1(S)(S)edge[loopbelow]nodeI,  + 1(S)edge[left]nodeO,  − 1(L);
+</span>
+
+</span>
+</span> 
+</div>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-2.2">2.2</a> Part (b)
+</h2>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-2.3">2.3</a> Part (c)
+</h2>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-2.4">2.4</a> Part (d)
+</h2>
+<h1 class="Section">
+<a class="toc" name="toc-Section-3">3</a> Problem 3
+</h1>
+<h1 class="Section">
+<a class="toc" name="toc-Section-4">4</a> Problem 4
+</h1>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-4.1">4.1</a> Part (a)
+</h2>
+<div class="Unindented">
+If we zero out the eligibility traces after 3 time steps i.e when they fall below <span class="formula">(<i>γ</i><i>λ</i>)<sup>3</sup>, </span> we will end up getting a variant of <span class="formula"><i>G</i><span class="scripts"><sup class="script"><i>λ</i></sup><sub class="script"><i>t</i></sub></span></span>. The proof is given below.<br/>
+<br/>
+Consider a transition as given below.<br/>
+<br/>
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+[ − 
+</span>
+<span class="arraycell align-l">
+gt;, 
+</span>
+<span class="arraycell align-l">
+gt; = stealth’, auto, nodedistance = 2.8cm, semithick]<span class="unknown">\tikzstyle</span>everystate = [text = black]<span class="unknown">\node</span>[state](s1)s<sub>1</sub>;<span class="unknown">\node</span>[state](s2)[rightof = s1]s<sub>2</sub>;<span class="unknown">\node</span>[state](s3)[rightof = s2]s<sub>3</sub>;<span class="unknown">\node</span>[state](s4)[rightof = s3]s<sub>4</sub>;<span class="unknown">\node</span>[state](s5)[rightof = s4]s<sub>5</sub>;<span class="unknown">\path</span>(s1)edgenodea<sub>1</sub>, R<sub>1</sub>(s2)(s2)edgenodea<sub>2</sub>, R<sub>2</sub>(s3)(s3)edgenodea<sub>3</sub>, R<sub>3</sub>(s4)(s4)edgenodea<sub>4</sub>, R<sub>4</sub>(s5);
+</span>
+
+</span>
+</span><br/>
+<br/>
+Now lets formulate eligibility for each of the <span class="formula">5</span> states for <span class="formula">5</span> time steps.<br/>
+<br/>
+
+</div>
+<div class="Indented">
+<table>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>E</i><sub><i>i</i></sub>(<i>s</i><sub><i>j</i></sub>)</span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>s</i><sub>1</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>s</i><sub>2</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>s</i><sub>3</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>s</i><sub>4</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>s</i><sub>5</sub></span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>e</i><sub>0</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>e</i><sub>1</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>e</i><sub>2</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>γ</i><i>λ</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>e</i><sub>3</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">(<i>γ</i><i>λ</i>)<sup>2</sup></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>γ</i><i>λ</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>e</i><sub>4</sub></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">(<i>γ</i><i>λ</i>)<sup>3</sup></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">(<i>γ</i><i>λ</i>)<sup>2</sup></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>γ</i><i>λ</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1</span>
+</td>
+<td align="center" valign="top">
+<span class="formula">0</span>
+</td>
+
+</tr>
+<tr>
+<td align="center" valign="top">
+<span class="formula"><i>e</i><sub>5</sub></span>
+</td>
+<td align="center" valign="top">
+<b><span class="formula">0</span></b>
+</td>
+<td align="center" valign="top">
+<span class="formula">(<i>γ</i><i>λ</i>)<sup>3</sup></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">(<i>γ</i><i>λ</i>)<sup>2</sup></span>
+</td>
+<td align="center" valign="top">
+<span class="formula"><i>γ</i><i>λ</i></span>
+</td>
+<td align="center" valign="top">
+<span class="formula">1</span>
+</td>
+
+</tr>
+
+</table>
+<br/>
+<br/>
+Now let <span class="formula"><i>V</i></span> denote the value function estimate for all the states as a vector i.e <span class="formula"><i>V</i><sub><i>i</i></sub> = <i>V</i>(<i>s</i><sub><i>i</i></sub>)</span>. When we do online updates to <span class="formula"><i>V</i></span> using eligibility traces, say <span class="formula"><i>V</i>(<i>s</i><sub>1</sub>)</span> - will get updated till time epoch <span class="formula">4</span> as its eligibility goes to <span class="formula">0</span> after that. Also, we are assuming that <span class="formula"><i>s</i><sub>1</sub></span> is not visited till its eligibility goes to <span class="formula">0</span> ( This is not necessary, but makes the proof simple :) ). So let us consider the total reward which is used to update <span class="formula"><i>V</i>(<i>s</i><sub>1</sub>)</span>.<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>V</i>
+</span>
+<span class="arraycell align-l">
+ ← <i>V</i> + <i>α</i><i>δ</i><i>e</i><sup>(<i>t</i>)</sup>
+</span>
+
+</span>
+</span>
+</div>
+ where <span class="formula"><i>e</i><sup>(<i>t</i>)</sup></span> denotes eligibility vector ( for all states ) at time instant <span class="formula"><i>t</i></span>.<br/>
+<br/>
+Now for <span class="formula"><i>V</i>(<i>s</i><sub>1</sub>)</span>, the updates are as follows.<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>V</i>(<i>s</i><sub>1</sub>)
+</span>
+<span class="arraycell align-l">
+ ← <i>V</i>(<i>s</i><sub>1</sub>) + <i>α</i>{<i>R</i><sub>1</sub> + <i>γ</i><i>V</i>(<i>s</i><sub>2</sub>) − <i>V</i>(<i>s</i><sub>1</sub>) + <i>γ</i><i>λ</i>{<i>R</i><sub>2</sub> + <i>γ</i><i>V</i>(<i>s</i><sub>3</sub>) − <i>V</i>(<i>s</i><sub>2</sub>)} + (<i>γ</i><i>λ</i>)<sup>2</sup>{<i>R</i><sub>3</sub> + <i>γ</i><i>V</i>(<i>s</i><sub>4</sub>) − <i>V</i>(<i>s</i><sub>3</sub>)}
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-l">
+ 
+</span>
+<span class="arraycell align-l">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-l">
+
+</span>
+<span class="arraycell align-l">
+ + (<i>γ</i><i>λ</i>)<sup>3</sup>{<i>R</i><sub>4</sub> + <i>γ</i><i>V</i>(<i>s</i><sub>5</sub>) − <i>V</i>(<i>s</i><sub>4</sub>)}}
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+Now this big summation can be reduced by simple math manipulations. Lets decompose,
+</div>
+<div class="Indented">
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>R</i><sub>1</sub>
+</span>
+<span class="arraycell align-l">
+ = <i>R</i><sub>1</sub>(1 − <i>λ</i>) + <i>R</i><sub>1</sub>(1 − <i>λ</i>)<i>λ</i> + <i>R</i><sub>1</sub>(1 − <i>λ</i>)<i>λ</i><sup>2</sup> + <i>R</i><sub>1</sub>(1 − <i>λ</i>)<i>λ</i><sup>3</sup> + <i>R</i><sub>1</sub><i>λ</i><sup>4</sup>
+</span>
+
+</span>
+</span>
+</div>
+
+</div>
+<div class="Indented">
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>R</i><sub>2</sub>
+</span>
+<span class="arraycell align-l">
+ = <i>R</i><sub>2</sub>(1 − <i>λ</i>) + <i>R</i><sub>2</sub>(1 − <i>λ</i>)<i>λ</i> + <i>R</i><sub>2</sub>(1 − <i>λ</i>)<i>λ</i><sup>2</sup> + <i>R</i><sub>2</sub><i>λ</i><sup>3</sup>
+</span>
+
+</span>
+</span>
+</div>
+
+</div>
+<div class="Indented">
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>R</i><sub>3</sub>
+</span>
+<span class="arraycell align-l">
+ = <i>R</i><sub>3</sub>(1 − <i>λ</i>) + <i>R</i><sub>3</sub>(1 − <i>λ</i>)<i>λ</i> + <i>R</i><sub>3</sub><i>λ</i><sup>2</sup>
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+So the above expression can be rewritten as given below.<br/>
+<br/>
+<span class="formula"><i>V</i>(<i>s</i><sub>1</sub>) ← <i>V</i>(<i>s</i><sub>1</sub>) + <i>α</i>{{<i>λ</i><sup>0</sup>{<i>R</i><sub>1</sub> + <i>γ</i><i>V</i>(<i>s</i><sub>2</sub>)} + <i>λ</i><sup>1</sup>{<i>R</i><sub>1</sub> + <i>γ</i><i>R</i><sub>2</sub> + <i>γ</i><sup>2</sup><i>V</i>(<i>s</i><sub>3</sub>)} + <i>λ</i><sup>2</sup>{<i>R</i><sub>1</sub> + <i>γ</i><i>R</i><sub>2</sub> + <i>γ</i><sup>2</sup><i>R</i><sub>3</sub> + <i>γ</i><sup>3</sup><i>V</i>(<i>s</i><sub>4</sub>)} + <i>λ</i><sup>3</sup>{<i>R</i><sub>1</sub> + <i>γ</i><i>R</i><sub>2</sub> + <i>γ</i><sup>2</sup><i>R</i><sub>3</sub> + <i>γ</i><sup>3</sup><i>R</i><sub>4</sub> + <i>γ</i><sup>4</sup><i>V</i>(<i>s</i><sub>5</sub>)} + <i>λ</i><sup>4</sup>{<i>R</i><sub>1</sub> + <i>γ</i><i>R</i><sub>2</sub> + <i>γ</i><sup>2</sup><i>R</i><sub>3</sub> + <i>γ</i><sup>3</sup><i>R</i><sub>4</sub>}} − <i>V</i>(<i>s</i><sub>1</sub>)}</span><br/>
+<br/>
+i.e <span class="formula"><i>G</i><sup><i>λ</i> − <i>eff</i></sup> = </span> <span class="formula"><span class="limits"><span class="limit">∑</span></span><span class="scripts"><sup class="script">4</sup><sub class="script"><i>i</i> = 1</sub></span><i>λ</i><sup><i>i</i> − 1</sup><i>G</i><sup>(<i>i</i>)</sup> + <i>λ</i><sup>4</sup><i>G</i><sup><i>MC</i> − 4</sup></span> where <span class="formula"><i>G</i><sup>(<i>i</i>)</sup> = <i>i</i> − <i>step</i> <i>return</i></span> and <span class="formula"><i>G</i><sup><i>MC</i> − 4</sup> = 4 − <i>step</i> <i>truncated</i> <i>MC</i> <i>return</i>.</span>
+</div>
+<h2 class="Subsection">
+<a class="toc" name="toc-Subsection-4.2">4.2</a> Part (b)
+</h2>
+<div class="Unindented">
+From the above analysis, we can generalise it to <span class="formula">(<i>γ</i><i>λ</i>)<sup><i>n</i> − 1</sup></span> truncation case ( after <span class="formula"><i>n</i></span> time steps ).
+</div>
+<div class="Indented">
+<span class="formula"><i>G</i><sup><i>λ</i> − <i>eff</i></sup> = </span> <span class="formula"><span class="limits"><span class="limit">∑</span></span><span class="scripts"><sup class="script"><i>n</i></sup><sub class="script"><i>i</i> = 1</sub></span><i>λ</i><sup><i>i</i> − 1</sup><i>G</i><sup>(<i>i</i>)</sup> + <i>λ</i><sup><i>n</i></sup><i>G</i><sup><i>MC</i> − (<i>n</i>)</sup></span> where <span class="formula"><i>G</i><sup>(<i>i</i>)</sup> = <i>i</i> − <i>step</i> <i>return</i></span><br/>
+ and <span class="formula"><i>G</i><sup><i>MC</i> − (<i>n</i>)</sup> = <i>n</i> − <i>step</i> <i>truncated</i> <i>MC</i> <i>return</i>.</span>
+</div>
+<h1 class="Section">
+<a class="toc" name="toc-Section-5">5</a> Problem 5
+</h1>
+<h1 class="Section">
+<a class="toc" name="toc-Section-6">6</a> Problem 6
+</h1>
+<div class="Unindented">
+Q-learning is an off-policy method and using it, we can learn optimal policies even if we follow random exploratory policies to generate episodes. Similarly, if we use on-policy methods, we need to use importance sampling if the behaviour policy and target policy are different.<br/>
+<br/>
+Now suppose we have the optimal policy in hand. We need to learn the value function of an arbitrary policy while following the optimal policy. To learn the value function of an arbitrary policy ( not optimal ) we need to use some on-policy method say SARSA. And we need to generate trajectories from that policy. Since, we are using the optimal policy to generate trajectories we can use importance sampling to weigh the updates and hence make sure that the estimated Q-values correspond to the arbitrary policy.<br/>
+<br/>
+But this method has a higher variance and you can reduce it a bit using Weighted importance sampling at the cost of added bias. Another important thing to ensure is that the optimal policy should cover the arbitrary policy i.e it should be stochastic in places wherever the arbitrary policy is stochastic. This is important otherwise the weight blows to <span class="formula">∞</span>.
+</div>
+<h1 class="Section">
+<a class="toc" name="toc-Section-7">7</a> Problem 7
+</h1>
+<h1 class="Section">
+<a class="toc" name="toc-Section-8">8</a> Problem 8
+</h1>
+<h1 class="Section">
+<a class="toc" name="toc-Section-9">9</a> Problem 9
+</h1>
+<h1 class="Section">
+<a class="toc" name="toc-Section-10">10</a> Problem 10
+</h1>
+<h1 class="Section">
+<a class="toc" name="toc-Section-11">11</a> Problem 11
+</h1>
+<div class="Unindented">
+We have a bandit problem in which the parameters on which the policy depends are the preferences of the actions and the action selection probabilities are determined using a softmax relationship as:
+</div>
+<div class="Indented">
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>π</i><sub><i>t</i></sub>(<i>a</i><sub><i>j</i></sub>) = 
+</span>
+<span class="arraycell align-l">
+<span class="fraction"><span class="ignored">(</span><span class="numerator"><i>e</i><sup><i>p</i><sub><i>t</i></sub>(<i>a</i><sub><i>j</i></sub>)</sup></span><span class="ignored">)/(</span><span class="denominator"><span class="limits"><sup class="limit"><i>n</i></sup><span class="limit">⎲</span><span class="limit">⎳</span><sub class="limit"><i>i</i> = 1</sub></span><i>e</i><sup><i>p</i><sub><i>t</i></sub>(<i>a</i><sub><i>i</i></sub>)</sup></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+where <span class="formula"><i>p</i><sub><i>t</i></sub>(<i>a</i>)</span> is the preference of action <span class="formula"><i>a</i></span> at time <span class="formula"><i>t</i></span>.<br/>
+<br/>
+The REINFORCE update equation is:<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>θ</i><sub><i>t</i> + 1</sub>
+</span>
+<span class="arraycell align-l">
+ ← <i>θ</i><sub><i>t</i></sub> + <i>α</i><sub><i>t</i></sub>(<i>r</i><sub><i>t</i></sub> − <i>b</i><sub><i>t</i></sub>)∇<sub><i>p</i><sub><i>t</i></sub></sub><i>log</i>(<i>π</i><sub><i>t</i></sub>(<i>a</i><sub><i>t</i></sub>))<span class="fraction"><span class="ignored">(</span><span class="numerator">∂<i>p</i><sub><i>t</i></sub></span><span class="ignored">)/(</span><span class="denominator">∂<i>θ</i><sub><i>t</i></sub></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
+</div>
+<span class="formula"></span><br/>
+where baseline <span class="formula"><i>b</i><sub><i>t</i></sub></span> is defined as <span class="formula"><i>b</i><sub><i>t</i> + 1</sub> = <i>b</i><sub><i>t</i></sub> + <i>β</i>(<i>r</i><sub><i>t</i></sub> − <i>b</i><sub><i>t</i></sub>)</span>.<br/>
+<br/>
+Solving we get,
+</div>
+<div class="Indented">
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>θ</i><sub><i>t</i> + 1</sub>
+</span>
+<span class="arraycell align-l">
+ ← <i>θ</i><sub><i>t</i></sub> + <i>α</i><sub><i>t</i></sub>(<i>r</i><sub><i>t</i></sub> − <i>b</i><sub><i>t</i></sub>){1 − <i>π</i><sub><i>t</i></sub>(<i>a</i><sub><i>t</i></sub>)}<span class="fraction"><span class="ignored">(</span><span class="numerator">∂<i>p</i><sub><i>t</i></sub></span><span class="ignored">)/(</span><span class="denominator">∂<i>θ</i><sub><i>t</i></sub></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
+</div>
+
+</div>
+<h1 class="Section">
+<a class="toc" name="toc-Section-12">12</a> Problem 12
+</h1>
+<div class="Unindented">
+Let us consider a Gaussian parameterization for the same. Parameters are mean <span class="formula"><i>μ</i></span> and variance <span class="formula"><i>σ</i><sup>2</sup></span> of the Normal distribution and baseline <span class="formula"><i>b</i><sub><i>t</i></sub> = 0</span>.<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>π</i><sub><i>t</i></sub>(<i>a</i>;<i>μ</i><sub><i>t</i></sub>, <i>σ</i><sub><i>t</i></sub>) = 
+</span>
+<span class="arraycell align-l">
+<span class="fraction"><span class="ignored">(</span><span class="numerator">1</span><span class="ignored">)/(</span><span class="denominator"><span class="sqrt"><span class="radical">√</span><span class="ignored">(</span><span class="root">2<i>π</i><i>σ</i></span><span class="ignored">)</span></span></span><span class="ignored">)</span></span><i>e</i><sup> − <span class="fraction"><span class="ignored">(</span><span class="numerator">(<i>a</i> − <i>μ</i><sub><i>t</i></sub>)<sup>2</sup></span><span class="ignored">)/(</span><span class="denominator"><i>σ</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>t</i></sub></span></span><span class="ignored">)</span></span></sup>
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+<br/>
+The REINFORCE update equation is:<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>θ</i><sub><i>t</i> + 1</sub>
+</span>
+<span class="arraycell align-l">
+ ← <i>θ</i><sub><i>t</i></sub> + <i>α</i><sub><i>t</i></sub>(<i>r</i><sub><i>t</i></sub> − <i>b</i><sub><i>t</i></sub>)∇<sub><i>θ</i><sub><i>t</i></sub></sub><i>log</i>(<i>π</i><sub><i>t</i></sub>(<i>a</i><sub><i>t</i></sub>))
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+<br/>
+Here <span class="formula"><i>θ</i><sub><i>t</i></sub> = <span class="array"><span class="arrayrow">
+<span class="arraycell align-c">
+<i>μ</i><sub><i>t</i></sub>
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-c">
+ 
+</span>
+
+</span>
+<span class="arrayrow">
+<span class="arraycell align-c">
+<i>σ</i><sub><i>t</i></sub>
+</span>
+
+</span>
+</span></span> . Solving we get,<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>μ</i><sub><i>t</i> + 1</sub>
+</span>
+<span class="arraycell align-l">
+ ← <i>μ</i><sub><i>t</i></sub> + <i>α</i><sub><i>t</i></sub><i>r</i><sub><i>t</i></sub>(<i>a</i><sub><i>t</i></sub> − <i>μ</i><sub><i>t</i></sub>)
+</span>
+
+</span>
+</span>
+</div>
+<br/>
+<br/>
+<div class="formula">
+<span class="environment"><span class="arrayrow">
+<span class="arraycell align-l">
+1<i>σ</i><sub><i>t</i> + 1</sub>
+</span>
+<span class="arraycell align-l">
+ ← <i>σ</i><sub><i>t</i></sub> + <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>α</i><sub><i>t</i></sub><i>r</i><sub><i>t</i></sub>{(<i>a</i><sub><i>t</i></sub> − <i>μ</i><sub><i>t</i></sub>)<sup>2</sup> − <i>σ</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>t</i></sub></span>}</span><span class="ignored">)/(</span><span class="denominator"><i>σ</i><sub><i>t</i></sub></span><span class="ignored">)</span></span>
+</span>
+
+</span>
+</span>
+</div>
+
+</div>
+
+</div>
+</body>
+</html>

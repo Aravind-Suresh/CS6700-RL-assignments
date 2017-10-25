@@ -1,0 +1,2145 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1cm
+\topmargin 1cm
+\rightmargin 1cm
+\bottommargin 1cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Reinforcement learning ( CS6700 )
+\begin_inset Newline newline
+\end_inset
+
+Written assignment #4
+\end_layout
+
+\begin_layout Author
+Aravind S
+\begin_inset Newline newline
+\end_inset
+
+EE14B013
+\end_layout
+
+\begin_layout Date
+14th Apr.
+ 2017
+\end_layout
+
+\begin_layout Section
+Problem 1
+\end_layout
+
+\begin_layout Subsection
+Part (a)
+\end_layout
+
+\begin_layout Standard
+We are using linear function approximator for TD(0).
+ The features extracted for a particular state 
+\begin_inset Formula $s$
+\end_inset
+
+ is denoted by 
+\begin_inset Formula $\phi(s)$
+\end_inset
+
+ and say we are learning the value function 
+\begin_inset Formula $V(s)$
+\end_inset
+
+ for every state 
+\begin_inset Formula $s$
+\end_inset
+
+.
+ Since we are using a linear function approximator,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V(s;\theta)=\theta^{T}\phi(s)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $\phi(s)$
+\end_inset
+
+ is a 
+\begin_inset Formula $t\,X\,1$
+\end_inset
+
+ vector and 
+\begin_inset Formula $\theta$
+\end_inset
+
+ represents the parameter and is also a 
+\begin_inset Formula $t\,X\,1$
+\end_inset
+
+ vector.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Using eligibility traces we can modify the update rules by using past-gradient
+ information also.
+\end_layout
+
+\begin_layout Subsection*
+Formulation
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+ denote the eligibility vector for all the parameters at the time instant
+ 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ This has the same dimension as 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+e_{t}=\gamma\lambda e_{t-1}+\nabla_{\theta_{t}}V(s_{t};\theta_{t})
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+e_{t}=\gamma\lambda e_{t-1}+\phi(s_{t})
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Using 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+ the update rule for 
+\begin_inset Formula $\theta$
+\end_inset
+
+ becomes,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\theta_{t+1}\leftarrow\theta_{t}+\alpha\delta_{t}e_{t}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $\delta_{t}=R_{t+1}+\gamma V(s_{t+1})-V(s_{t})$
+\end_inset
+
+ which is the TD-error at the time step 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+Algorithm
+\end_layout
+
+\begin_layout LyX-Code
+Input: policy 
+\begin_inset Formula $\pi$
+\end_inset
+
+ - value function is estimated for this policy
+\end_layout
+
+\begin_layout LyX-Code
+Initialise value-function weights 
+\begin_inset Formula $\theta$
+\end_inset
+
+ arbitrarily
+\end_layout
+
+\begin_layout LyX-Code
+Repeat ( for each episode ):
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+Initialise state
+\end_layout
+
+\begin_layout LyX-Code
+Obtain initialise feature vector 
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $e\leftarrow0$
+\end_inset
+
+ # 
+\begin_inset Formula $t\,X\,1$
+\end_inset
+
+ vector
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $V_{old}\leftarrow0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+Repeat ( for each step of the episode ):
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+Choose 
+\begin_inset Formula $A\sim\pi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+Take action 
+\begin_inset Formula $A$
+\end_inset
+
+, observe 
+\begin_inset Formula $R,\phi'$
+\end_inset
+
+ ( feature vector of the next state )
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $V\leftarrow\theta^{T}\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $V'\leftarrow\theta^{T}\phi'$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $e\leftarrow\gamma\lambda e+(1-\alpha\gamma\lambda e^{T}\phi)\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $\delta\leftarrow R+\gamma V'-V$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $\theta\leftarrow\theta+\alpha(\delta+V-V_{old})e-\alpha(V-V_{old})\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $V_{old}\leftarrow V'$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Formula $\phi\leftarrow\phi'$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Part (b)
+\end_layout
+
+\begin_layout Standard
+Replacing traces for parameter updates are defined when the elements of
+ 
+\begin_inset Formula $\phi(s)$
+\end_inset
+
+ are binary i.e they take a value of 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ In such cases, the trace is defined as follows:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+e_{t}^{i}(s)=\begin{cases}
+\gamma\lambda e_{t-1}^{i}(s) & \phi^{i}(s)=0\\
+1 & \phi^{i}(s)=1
+\end{cases}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $v^{i}$
+\end_inset
+
+ denotes the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ component of a vector 
+\begin_inset Formula $v$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Accumulating traces on the other hand are far more generic and can be used
+ however arbitrary 
+\begin_inset Formula $\phi(s)$
+\end_inset
+
+ is.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Here, 
+\begin_inset Formula $\phi(s)$
+\end_inset
+
+ is not binary and hence accumulating traces should be used.
+ The definition of replacing trace is shown above and hence isn't a valid
+ method to be applied here.
+\end_layout
+
+\begin_layout Section
+Problem 2
+\end_layout
+
+\begin_layout Subsection
+Part (a)
+\end_layout
+
+\begin_layout Standard
+From the information given about 
+\begin_inset Formula $\phi(s)=\begin{array}{c}
+\phi_{1}(s)\\
+\phi_{2}(s)\\
+\phi_{3}(s)
+\end{array}$
+\end_inset
+
+ for states 
+\begin_inset Formula $s=s_{1},s_{2}$
+\end_inset
+
+ we can write the value function as,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+V=\phi\theta
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $V=\begin{array}{c}
+V(s_{1})\\
+V(s_{2})
+\end{array}$
+\end_inset
+
+ , 
+\begin_inset Formula $\theta=\begin{array}{c}
+\theta_{1}\\
+\theta_{2}\\
+\theta_{3}
+\end{array}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=\begin{array}{ccc}
+1 & -1 & -1\\
+-1 & -1 & 1
+\end{array}$
+\end_inset
+
+.
+ Now 
+\begin_inset Formula $V$
+\end_inset
+
+ can be written as,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+V=\begin{array}{c}
+\theta_{1}-\theta_{2}-\theta_{3}\\
+-\theta_{1}-\theta_{2}+\theta_{3}
+\end{array}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $V$
+\end_inset
+
+ is a point in the 2-dimensional space.
+ Any point in the 
+\begin_inset Formula $2$
+\end_inset
+
+ dimensional space can be represented by suitable values of 
+\begin_inset Formula $\theta_{i}'s$
+\end_inset
+
+.
+ For instance, 
+\begin_inset Formula $V^{*}(s_{1})=x$
+\end_inset
+
+ and 
+\begin_inset Formula $V^{*}(s_{2})=y$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $\theta=\begin{array}{c}
+\frac{x-y}{2}\\
+\frac{-x-y}{2}\\
+0
+\end{array}$
+\end_inset
+
+.
+ This can also be inferred from the 
+\begin_inset Formula $\phi$
+\end_inset
+
+ matrix.
+ The rank of the matrix is 
+\begin_inset Formula $2$
+\end_inset
+
+ as it has 
+\begin_inset Formula $2$
+\end_inset
+
+ independent rows and the dimensionality of 
+\begin_inset Formula $V$
+\end_inset
+
+, 
+\begin_inset Formula $dim(V)=2$
+\end_inset
+
+.
+ This means any point in the 
+\begin_inset Formula $2$
+\end_inset
+
+ dimensional space can be represented and hence any value function can be
+ learnt.
+ In other words, this is similar to a look-up table, where instead of using
+ one-hot encodings for states we use a different encoding.
+\end_layout
+
+\begin_layout Subsection
+Part (b)
+\end_layout
+
+\begin_layout Standard
+Linear gradient descent TD(0) update rule is given below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\theta_{t+1}\leftarrow\theta_{t}+\alpha[R_{t+1}+\gamma V_{t}(s_{t+1})-V_{t}(s_{t})][\nabla_{\theta_{t}}V_{t}(s_{t})]
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+So given the experience 
+\begin_inset Formula $s_{2}-a_{2}-(-5)-s_{1}-a_{1}$
+\end_inset
+
+ we have,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\theta_{t+1}\leftarrow\theta_{t}+\alpha[-5+\gamma V(s_{1})-V(s_{2})]\begin{array}{c}
+-1\\
+-1\\
+1
+\end{array}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+i.e
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\begin{array}{c}
+\theta_{t+1}^{(1)}\\
+\theta_{t+1}^{(2)}\\
+\theta_{t+1}^{(3)}
+\end{array}=\begin{array}{c}
+\theta_{t}^{(1)}-x\\
+\theta_{t}^{(2)}-x\\
+\theta_{t}^{(3)}+x
+\end{array}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $x=\alpha(-5+\gamma V(s_{1})-V(s_{2}))$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{t}^{(i)}$
+\end_inset
+
+ denotes the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ component of the vector 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Problem 3
+\end_layout
+
+\begin_layout Subsection
+Part (a)
+\end_layout
+
+\begin_layout Standard
+Here we have a different version of gradient-descent and hence a different
+ update rule.
+ The update rule is given below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\theta_{t+1}\leftarrow\theta_{t}+\alpha[R_{t+1}+\gamma V_{t}(s_{t+1})-V_{t}(s_{t})][\nabla_{\theta_{t}}V_{t}(s_{t})-\gamma\nabla_{\theta_{t}}V_{t}(s_{t+1})]
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The experience given is 
+\begin_inset Formula $s_{2}-a_{2}-(-5)-s_{1}-a_{1}$
+\end_inset
+
+.
+ The update for each parameter for state 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ of the MDP is given below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\theta_{t+1}\leftarrow\theta_{t}+\alpha[-5+\gamma V(s_{1})-V(s_{2})]\{\begin{array}{c}
+-1\\
+-1\\
+1
+\end{array}-\gamma\begin{array}{c}
+1\\
+-1\\
+-1
+\end{array}\}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+i.e
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\theta_{t+1}\leftarrow\theta_{t}+\alpha[-5+\gamma V(s_{1})-V(s_{2})]\{\begin{array}{c}
+-1-\gamma\\
+-1+\gamma\\
+1+\gamma
+\end{array}\}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\begin{array}{c}
+\theta_{t+1}^{(1)}\\
+\theta_{t+1}^{(2)}\\
+\theta_{t+1}^{(3)}
+\end{array}=\begin{array}{c}
+\theta_{t}^{(1)}-(1+\gamma)x\\
+\theta_{t}^{(2)}-(1-\gamma)x\\
+\theta_{t}^{(3)}+(1+\gamma)x
+\end{array}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $x=\alpha(-5+\gamma V(s_{1})-V(s_{2}))$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{t}^{(i)}$
+\end_inset
+
+ denotes the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+ component of the vector 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Part (b)
+\end_layout
+
+\begin_layout Standard
+From equation 
+\begin_inset Formula $1$
+\end_inset
+
+, we know the following.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+V=\phi\theta
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $V=\begin{array}{c}
+V(s_{1})\\
+V(s_{2})
+\end{array}$
+\end_inset
+
+ , 
+\begin_inset Formula $\theta=\begin{array}{c}
+\theta_{1}\\
+\theta_{2}\\
+\theta_{3}
+\end{array}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=\begin{array}{ccc}
+1 & -1 & -1\\
+-1 & -1 & 1
+\end{array}$
+\end_inset
+
+.
+ 
+\begin_inset Newline newline
+\end_inset
+
+Therefore, 
+\begin_inset Formula $V_{t}=\phi\theta_{t}$
+\end_inset
+
+.
+ Premultiplying equation 
+\begin_inset Formula $2$
+\end_inset
+
+ by 
+\begin_inset Formula $\phi$
+\end_inset
+
+ we get,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+V_{t+1}\leftarrow V_{t}+\alpha[R_{t+1}+\gamma V_{t}(s_{t+1})-V_{t}(s_{t})]y
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $y=\begin{array}{ccc}
+1 & -1 & -1\\
+-1 & -1 & 1
+\end{array}\begin{array}{c}
+-1-\gamma\\
+-1+\gamma\\
+1+\gamma
+\end{array}=\begin{array}{c}
+-1-\gamma+1-\gamma-1-\gamma\\
+1+\gamma+1-\gamma+1+\gamma
+\end{array}=\begin{array}{c}
+-1-3\gamma\\
+3+\gamma
+\end{array}$
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $V_{t}=\begin{array}{c}
+V_{t}(s_{1})\\
+V_{t}(s_{2})
+\end{array}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Problem 4
+\end_layout
+
+\begin_layout Standard
+Linear PSRs are as representative as POMDPs and are very good alternatives
+ to POMDPs.
+ But they do have some advantages over POMDPs.
+ They are listed below.
+\end_layout
+
+\begin_layout Itemize
+POMDP learning algorithms may not give optimal solutions as they may converge
+ to a local minimum or a saddle point.
+ This is because all their states are equipotential.
+ PSRs on the other hand are more grounded in data and hence don't have this
+ symmetry problem.
+\end_layout
+
+\begin_layout Itemize
+PSRs are more dependent on the data and can learn complex representations.
+ You just need more tests if we constrain the function 
+\begin_inset Formula $f_{t}$
+\end_inset
+
+ to be linear.
+ As a result, learning complex representations is easier and hence PSRs
+ generalise better.
+\end_layout
+
+\begin_layout Itemize
+POMDPs depend on accurate prior models which may not be available in all
+ problems.
+ PSRs on the other hand are less dependent on this as they just take the
+ actions and observations for constructing tests.
+\end_layout
+
+\begin_layout Itemize
+Learning POMDPs without these prior models is difficult and PSR is a very
+ good alternative if prior models aren't available.
+\end_layout
+
+\begin_layout Section
+Problem 5
+\end_layout
+
+\begin_layout Standard
+POMDPs have partially observed states and hence the agent doesn't have the
+ complete information about the state.
+ So, it is tougher to solve when compared to solving an MDP.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Q-MDP is one way to solve a POMDP.
+ Here you assume that you have complete information about the MDP i.e you
+ assume the minimal information about the state as the complete information
+ and learn action-value or value functions.
+ When you are executing the policy, you use some heuristic to choose the
+ action based on the belief state for that particular state.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Consider 
+\begin_inset Formula $2$
+\end_inset
+
+ states 
+\begin_inset Formula $s_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ which have the same representation as they are partially observed.
+ Lets call this representation 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ Now, 
+\begin_inset Formula $Q(s_{1},a)$
+\end_inset
+
+ and 
+\begin_inset Formula $Q(s_{2},a)$
+\end_inset
+
+ will be learnt from the samples where state is observed as 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ This means, if the agent is 
+\begin_inset Formula $s_{1}$
+\end_inset
+
+ and makes a transition after taking action 
+\begin_inset Formula $a$
+\end_inset
+
+ to some other state 
+\begin_inset Formula $s_{x}$
+\end_inset
+
+ that is used to update 
+\begin_inset Formula $Q(s_{1},a)$
+\end_inset
+
+.
+ But since we have partial information about the state space, that transition
+ updates 
+\begin_inset Formula $Q(f,a)$
+\end_inset
+
+.
+ Similarly, the transitions from state 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ after taking action 
+\begin_inset Formula $a$
+\end_inset
+
+ will update 
+\begin_inset Formula $Q(f,a)$
+\end_inset
+
+.
+ In other words, a 
+\begin_inset Formula $Q$
+\end_inset
+
+ function is shared between 
+\begin_inset Formula $2$
+\end_inset
+
+ different states which have identical representations when observed partially.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Lets assume the case that, 
+\begin_inset Formula $s_{1}$
+\end_inset
+
+ is close to a state which gives a high positive reward and 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ is close to a state which gives a high negative reward.
+ Now, when trained 
+\begin_inset Formula $Q(f,a)$
+\end_inset
+
+ will have updates which partially get cancelled due to the positive and
+ negative rewards.
+ The gridworld is shown below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-5-grid-world.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If the agent reaches the top-right most square it gets a positive reward
+ of 
+\begin_inset Formula $+100$
+\end_inset
+
+ and if it lands up in the top-left most square it gets a negative reward
+ of 
+\begin_inset Formula $-100$
+\end_inset
+
+.
+ States 
+\begin_inset Formula $s_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ have the same representation 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ As a result 
+\begin_inset Formula $Q(f,a)$
+\end_inset
+
+ won't be learned properly.
+ The reason being, 
+\begin_inset Formula $Q(f,UP)$
+\end_inset
+
+ gets cancelling updates as both the transitions 
+\begin_inset Formula $s_{1}-UP$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}-UP$
+\end_inset
+
+ update 
+\begin_inset Formula $Q(f,UP)$
+\end_inset
+
+.
+ So, for state 
+\begin_inset Formula $s_{1},s_{2}$
+\end_inset
+
+ 
+\begin_inset Formula $UP$
+\end_inset
+
+ action won't be optimal.
+ In fact if the other states have unique representations ( even though they
+ are partially observed ), the policy learnt won't be optimal.
+ The policy learnt in this case is shown below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-5-policy.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Now, the policy for the state 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ is not optimal.
+ This is because we have solved the POMDP in a Q-MDP fashion which doesn't
+ result in optimal policies in all cases.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The policies computed using Q-MDP method will be optimal if the states which
+ have similar representations in the partially observed space are similarly
+ rewarding.
+ In that case, the updates made to 
+\begin_inset Formula $Q(f,a)$
+\end_inset
+
+ are more related and hence the policy learnt will be optimal.
+\end_layout
+
+\begin_layout Section
+Problem 6
+\end_layout
+
+\begin_layout Subsection
+Part (a)
+\end_layout
+
+\begin_layout Standard
+When we use the 'ostrich' approach for handling partial observability, the
+ resulting MDP has the following components:
+\end_layout
+
+\begin_layout Itemize
+State-space 
+\begin_inset Formula $S=\{f_{1},f_{2},f_{3},..\}$
+\end_inset
+
+ where 
+\begin_inset Formula $f_{i}'s$
+\end_inset
+
+ denote the partially observed state.
+\end_layout
+
+\begin_layout Itemize
+Action set 
+\begin_inset Formula $A(f)$
+\end_inset
+
+ denoting the set of valid actions which can be taken from the PO ( partially
+ observed ) state 
+\begin_inset Formula $f$
+\end_inset
+
+ for all states 
+\begin_inset Formula $f\,\epsilon\,S$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The transitions are modelled using 
+\begin_inset Formula $p(s_{t+1}=f'|s_{t}=f,a_{t}=a)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Part (b)
+\end_layout
+
+\begin_layout Standard
+We are operating in a modified state-space where same observed states don't
+ necessarily correspond to same environmental states, which adds up the
+ stochasticity factor of the environment.
+ So,
+\end_layout
+
+\begin_layout Itemize
+Q-learning in highly stochastic environments doesn't perform well as there
+ is increased maximisation bias in this case.
+ This results in divergence or slower learning.
+ Since we have a max operation in Q-learning, if we see where the backups
+ come from they tend to backup from some particular states into the future,
+ and if estimates of those states aren't good enough, errors tend to get
+ accumulated over time.
+ So, Q-learning is not preferred.
+\end_layout
+
+\begin_layout Itemize
+Due to partial observability, states with dissimilar payoffs ( not similarly
+ rewarding ) tend to have the value functions.
+ As a result, using MC method doesn't make sense as it gives the maximum
+ likelihood estimate for the given data points.
+ Consider the example given in problem 
+\begin_inset Formula $5$
+\end_inset
+
+.
+ In that case 
+\begin_inset Formula $Q(f,UP)$
+\end_inset
+
+ gets contradicting updates as both 
+\begin_inset Formula $s_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ are observed as 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ So, the estimate of values/Q-values will have a very high variance and
+ hence aren't reliable.
+ So, MC is not a preferred learning technique.
+\end_layout
+
+\begin_layout Itemize
+SARSA! Compared to the other two, SARSA is better.
+ This is because SARSA updates consider the actual transition i.e for the
+ experience 
+\begin_inset Formula $s_{1}-a_{1}-r_{1}-s_{2}-a_{2}$
+\end_inset
+
+ , 
+\begin_inset Formula $Q(s_{1},a_{1})$
+\end_inset
+
+ is updated using 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $Q(s_{2},a_{2})$
+\end_inset
+
+.
+ Inspite of partial observability, updating from states which are actually
+ seen in the episodes leads to lesser error in the estimate.
+ This is because of the following reason.
+ Consider 
+\begin_inset Formula $2$
+\end_inset
+
+ states 
+\begin_inset Formula $s_{1},s_{2}$
+\end_inset
+
+ which have the same partial observation 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ When these are encountered in the trajectory, the next-states of these
+ states 
+\begin_inset Formula $s_{1next},s_{2next}$
+\end_inset
+
+ can have a different partial observation ( or their next-states further
+ into the future will have a different partial observation ) and hence their
+ estimates are more reliable.
+ Thus estimates for 
+\begin_inset Formula $Q(s_{1},a_{1})$
+\end_inset
+
+ are better here.
+ So, SARSA results in better policies than Q-learning/MC.
+\end_layout
+
+\begin_layout Itemize
+According to 
+\begin_inset Formula $Loch\,and\,Singh\,1998$
+\end_inset
+
+ ( ref.
+ 
+\begin_inset Formula $8$
+\end_inset
+
+ ), it is empirically shown that SARSA(
+\begin_inset Formula $\lambda$
+\end_inset
+
+) results in finding the best memoryless policy ( states don't contain history
+ of how you landed up in that position ) in POMDPs.
+ Even though, using eligibility traces in SARSA(
+\begin_inset Formula $\lambda$
+\end_inset
+
+) also contributes to the performance, even with 
+\begin_inset Formula $\lambda=0$
+\end_inset
+
+ ( no eligibility trace ), SARSA seems to be a better alternative when compared
+ to others.
+\end_layout
+
+\begin_layout Subsection
+Part (c)
+\end_layout
+
+\begin_layout Standard
+Policy search methods can be applied to POMDPs and they have the following
+ advantages over value-function based methods.
+\end_layout
+
+\begin_layout Itemize
+If the POMDP is not Markov, then Bellman updates aren't correct and hence
+ we won't be able to find a stable 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+It is better to learn stochastic policies in the case of POMDPs as we have
+ only partial observability of the environment.
+ So it makes sense to use stochastic policies to overcome this 
+\begin_inset Quotes eld
+\end_inset
+
+partial observability problem
+\begin_inset Quotes erd
+\end_inset
+
+ as at times we might take the right action.
+ Deriving stochastic policies from value-function based methods may not
+ be optimal ones and value-function methods may be unstable.
+\end_layout
+
+\begin_layout Section
+Problem 7
+\end_layout
+
+\begin_layout Standard
+It depends.
+ According to the original algorithm mentioned in the paper, it results
+ in recursively optimal policies.
+ The HAM-Q learning algorithm is described below.
+\end_layout
+
+\begin_layout Subsection*
+HAM Q learning
+\end_layout
+
+\begin_layout Standard
+The policy learnt in a HAM is what output transition should be chosen at
+ every choice point.
+ So, say the current environment state is 
+\begin_inset Formula $t$
+\end_inset
+
+, the current machine state is 
+\begin_inset Formula $n$
+\end_inset
+
+ and the environment and machine state at the previous choice point is 
+\begin_inset Formula $s_{c}$
+\end_inset
+
+ and 
+\begin_inset Formula $m_{c}$
+\end_inset
+
+ respectively.
+ Let 
+\begin_inset Formula $a$
+\end_inset
+
+ be the action taken at the previous choice point.
+ Now, we can do a Q-learning update for 
+\begin_inset Formula $Q([s_{c},m_{c}],a)$
+\end_inset
+
+ where the 
+\begin_inset Quotes eld
+\end_inset
+
+SMDP state
+\begin_inset Quotes erd
+\end_inset
+
+ is a concatenation of the current machine state and the environment state
+ ( core MDP state ).
+ Now, we need to accumulate discounted rewards which is done as follows.
+ For every transition from state 
+\begin_inset Formula $s$
+\end_inset
+
+ to state 
+\begin_inset Formula $t$
+\end_inset
+
+ with reward 
+\begin_inset Formula $r$
+\end_inset
+
+ and discount 
+\begin_inset Formula $\beta$
+\end_inset
+
+, the following update is done.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+r_{c}\leftarrow r_{c}+\beta_{c}r
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\beta_{c}\leftarrow\beta_{c}\beta
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Whenever there is a transition to a choice point,
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Q([s_{c},m_{c}],a)\leftarrow Q([s_{c},m_{c}],a)+\alpha[r_{c}+\beta_{c}V([t,n])-Q([s_{c},m_{c}],a)]
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and then 
+\begin_inset Formula $r_{c}\leftarrow0$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{c}\leftarrow1$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Now, if we consider the crucial steps in the above algorithm we can conclude
+ what type of optimality it acheives.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+SMDP state
+\begin_inset Quotes erd
+\end_inset
+
+ is assumed to be a concatenation of the 
+\begin_inset Quotes eld
+\end_inset
+
+current machine state
+\begin_inset Quotes erd
+\end_inset
+
+ and the environment state.
+ This means that this particular task doesn't have any idea about what are
+ the parent tasks, the history of how the agent landed up in this particular
+ machine state.
+ Therefore the agent tries to improve performance based on the local goals
+ setup for this particular task and hence the policy obtained need not be
+ hierarchically optimal.
+\end_layout
+
+\begin_layout Itemize
+Also, it depends on how the reward function 
+\begin_inset Formula $r$
+\end_inset
+
+ is defined.
+ If we try to optimise using a global reward function, then the local goals
+ set up will have rewards based on the history.
+ So, if and only if the 
+\begin_inset Formula $[s_{c},m_{c}]$
+\end_inset
+
+ is representative enough about history somehow the agent can learn hierarchical
+ optimal policies.
+\end_layout
+
+\begin_layout Standard
+In the paper, the 
+\begin_inset Quotes eld
+\end_inset
+
+SMDP state
+\begin_inset Quotes erd
+\end_inset
+
+ doesn't include history and rewards are taken from the MDP 
+\begin_inset Formula $M$
+\end_inset
+
+.
+ So, in general it can't learn hierarchical optimal policies.
+ Since it tries to optimise performance locally and hence acheive local
+ goals, the policies learnt are recursively optimal.
+ Every subtask is optimal in itself.
+ This results in more state-abstracted policies at the cost of optimality.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+We can make the algorithm learn hierarchically optimal policies by making
+ some modifications.
+\end_layout
+
+\begin_layout Itemize
+We should include the call-stack or the history of machine states visited
+ so that the agent has an idea of the global task.
+\end_layout
+
+\begin_layout Itemize
+We should modify the reward functions suitably so that the agent chooses
+ actions to maximise global rewards.
+\end_layout
+
+\begin_layout Standard
+The following example will make this idea clear.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Suppose we have the following environment.
+ And the agent is initially in the hall.
+ The agent has to fetch the book ( gets a high positive reward of 
+\begin_inset Formula $+100$
+\end_inset
+
+) and it is trying to learn this in a Hierarchical RL setup.
+ Say, there is a penalty of 
+\begin_inset Formula $-1$
+\end_inset
+
+ for every timestep.
+ Assume that a suitable discount factor is used.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-7-env.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Say the task is split as following: 
+\begin_inset Formula $move(hall,bedroom2-door)$
+\end_inset
+
+ and 
+\begin_inset Formula $move(bedroom2-door,book)$
+\end_inset
+
+.
+ Lets consider 
+\begin_inset Formula $2$
+\end_inset
+
+ cases.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In the first case, say we are using 
+\begin_inset Formula $2$
+\end_inset
+
+ HAMs for the 
+\begin_inset Formula $2$
+\end_inset
+
+ tasks and the 
+\begin_inset Formula $1st$
+\end_inset
+
+ HAM independently solves the first problem without the idea of the end
+ goal.
+ We will get a recursively optimal policy then as it best exploits the hierarchy
+ of tasks.
+ The policy obtained is shown below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-7-policy-ro.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+This policy optimises the number of steps to enter the room as the 
+\begin_inset Formula $1st$
+\end_inset
+
+ HAM has no idea of fetching the book.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Suppose, we modify the rewards for the first task so that the agent knows
+ about the end goal and hence tries to maximise the total reward to be obtained.
+ This is what we do in case 
+\begin_inset Formula $2$
+\end_inset
+
+.
+ The policy learnt here is hierarchically optimal as it not only confirms
+ to the hierarchy, but also chooses each individual behaviours so that they
+ obtain the overall best.
+ The policy learnt in this case is shown below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-7-policy-ho.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+This policy optimises the total number of steps required to fetch the book.
+ As a result actions for the locations between the 
+\begin_inset Formula $2$
+\end_inset
+
+ doors in hall change.
+\end_layout
+
+\begin_layout Section
+Problem 8
+\end_layout
+
+\begin_layout Standard
+Dietterich has specified 
+\begin_inset Formula $5$
+\end_inset
+
+ conditions for safe-state abstractions for the 
+\begin_inset Formula $MAXQ$
+\end_inset
+
+ framework.
+ But the 
+\begin_inset Formula $MAXQ$
+\end_inset
+
+ framework provides both the hierarchy i.e the 
+\begin_inset Formula $MAXQ$
+\end_inset
+
+ graph and the decomposition of the value function.
+ We can use the hierarchy but not use the decomposition.
+ Instead of that, we can use some other learning method on top of this hierarchy.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In such cases, a subset of those conditions need to be satisfied to ensure
+ safe-state abstractions.
+ They are listed below.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Subtask irrelevance
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+A set of variables are irrelevant to a subtask 
+\begin_inset Formula $i$
+\end_inset
+
+ if their exists a partition ( into 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ ) of the state variables of the original MDP such that the following property
+ holds.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P^{\pi}(s',N|s,j)=P^{\pi}(x',N|s,j)P^{\pi}(y'|x,y,j)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $x'$
+\end_inset
+
+ give values for variables in the set 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ and 
+\begin_inset Formula $y'$
+\end_inset
+
+ give values for variables in the set 
+\begin_inset Formula $Y$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Leaf irrelevance
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+Consider a primitive action 
+\begin_inset Formula $a$
+\end_inset
+
+.
+ If for any 
+\begin_inset Formula $2$
+\end_inset
+
+ states 
+\begin_inset Formula $s_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{2}$
+\end_inset
+
+ which differ only in their values for some set of variables and the following
+ condition holds true, then that set of variables is irrelevant.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\sum_{s_{1}'}P(s_{1}'|s_{1},a)R(s_{1}'|s_{1},a)=\sum_{s_{2}'}P(s_{2}'|s_{2},a)R(s_{2}'|s_{2},a)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In other words if the expected pay-off from the state after taking a primitive
+ action is the same for any 
+\begin_inset Formula $2$
+\end_inset
+
+ states, then the state variables where these 
+\begin_inset Formula $2$
+\end_inset
+
+ states differ are irrelevant.
+\end_layout
+
+\begin_layout Section
+Problem 9
+\end_layout
+
+\begin_layout Standard
+Options are temporally extended actions and learning Q-values over options
+ has its own advantages.
+ Introducing options reduces unnecessary exploration and as a result the
+ agent learns faster.
+ But all these hold true only when the option is defined properly.
+ If we define bad options - i.e those when incorporated leads to sub-optimal
+ behaviour, learning won't be faster.
+ In fact, after a point of time the agent will begin to ignore the options
+ defined and start executing primitive actions in all states.
+ This happens because the option-value for those options goes much below
+ than the expected reward obtained when primitive actions are taken.
+ Consider the case of the gridworld given in the question.
+ The gridworld is shown below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-9-grid-world.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The agent is provided with options to exit from one room to the other.
+ Say the option is defined by choosing a longer path to go from one room
+ to the other ( shown in the figure below; 
+\begin_inset Formula $room(top-left)\,to\,room(top-right)$
+\end_inset
+
+ ).
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-9-bad-option-1.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename img-9-bad-option-2.png
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In such cases, if the agent chooses to use the option ( which is sub-optimal
+ ), it will accumulate huge negative rewards ( as more steps are taken ).
+ Assuming the agent uses an explorative policy, the agent will learn that
+ using these options causes more harm than good.
+ Instead it can learn to exit from the room using primitive actions themselves.
+ If we design bad options, this is what happens.
+ After some point during training, option-values tend to be very low and
+ choosing primitive actions in those states result in higher pay-offs.
+ As a result, agent tends to discard options and hence the problem now reduces
+ to Q-learning without options ( the usual case ).
+ This means the advantages of options - improved exploration and faster
+ learning will not be observed.
+ This might be the case with the gridworld in the question.
+ We have to make sure options are designed in a proper way so as to exploit
+ its advantages.
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+Stolle, Martin, and Doina Precup.
+ "Learning options in reinforcement learning." International Symposium on
+ Abstraction, Reformulation, and Approximation.
+ Springer Berlin Heidelberg, 2002.
+\end_layout
+
+\begin_layout Enumerate
+Parr, Ronald, and Stuart Russell.
+ "Reinforcement learning with hierarchies of machines." Advances in neural
+ information processing systems (1998): 1043-1049.
+\end_layout
+
+\begin_layout Enumerate
+Dietterich, Thomas G.
+ "The MAXQ Method for Hierarchical Reinforcement Learning." ICML.
+ 1998.
+\end_layout
+
+\begin_layout Enumerate
+Dietterich, Thomas G.
+ "State Abstraction in MAXQ Hierarchical Reinforcement Learning." NIPS.
+ 1999.
+\end_layout
+
+\begin_layout Enumerate
+Ryan, M.
+ R.
+ K.
+ "1 Hierarchical decision making." Handbook of Learning and Approximate Dynamic
+ Programming (2004): 203-232.
+\end_layout
+
+\begin_layout Enumerate
+Littman, Michael L., Richard S.
+ Sutton, and Satinder Singh.
+ "Predictive representations of state." Advances in neural information processing
+ systems 2 (2002): 1555-1562.
+\end_layout
+
+\begin_layout Enumerate
+Perkins, Theodore J.
+ "Reinforcement learning for POMDPs based on action values and stochastic
+ optimization." AAAI/IAAI.
+ 2002.
+\end_layout
+
+\begin_layout Enumerate
+Loch, John, and Satinder P.
+ Singh.
+ "Using Eligibility Traces to Find the Best Memoryless Policy in Partially
+ Observable Markov Decision Processes." ICML.
+ 1998.
+\end_layout
+
+\begin_layout Enumerate
+Murphy, Kevin P.
+ "A survey of POMDP solution techniques." environment 2 (2000): X3.
+\end_layout
+
+\end_body
+\end_document
