@@ -1,0 +1,1125 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1cm
+\topmargin 1cm
+\rightmargin 1cm
+\bottommargin 1cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Reinforcement learning ( CS6700 )
+\begin_inset Newline newline
+\end_inset
+
+Paper critique report - Generative adversarial networks
+\end_layout
+
+\begin_layout Author
+Aravind S
+\begin_inset Newline newline
+\end_inset
+
+EE14B013
+\end_layout
+
+\begin_layout Date
+27th Jan.
+ 2017
+\end_layout
+
+\begin_layout Abstract
+With the advent of improved computing resources, deep learning community
+ started focussing on generative modelling.
+ Discriminative models are those where the goal is to predict the output
+ given some representation of the input i.e you model the distribution 
+\series bold
+
+\begin_inset Formula $p(y|x)$
+\end_inset
+
+
+\series default
+.
+ Generative models, on the other hand model the joint distribution of the
+ (input, output) from which the data is sampled from i.e 
+\begin_inset Formula $p(x,y)$
+\end_inset
+
+ is learnt.
+ Recently, adversarial set ups became popular and are an active area of
+ research.
+ Generative adversarial networks is a framework where a generative model
+ is learnt by interacting with a discriminator in the aim that after sufficient
+ epochs of training, the generative model captures the distribution from
+ which the training data is sampled.
+\end_layout
+
+\begin_layout Section
+Summary
+\end_layout
+
+\begin_layout Standard
+In this framework, 2 models are used - a 
+\series bold
+Generator 
+\series default
+
+\begin_inset Formula $G$
+\end_inset
+
+ and a 
+\series bold
+Discriminator 
+\series default
+
+\begin_inset Formula $D$
+\end_inset
+
+.
+ Both of them are neural networks.
+ Say, the data is obtained from a true distribution 
+\begin_inset Formula $p_{true}(X)$
+\end_inset
+
+ and our goal is to make sure that the generator 
+\begin_inset Formula $G$
+\end_inset
+
+ learns this distribution as much as possible.
+ Now the training data is samples from 
+\begin_inset Formula $p_{true}(X)$
+\end_inset
+
+.
+ The role of the generator ( a deep neural net ) is to generate 
+\begin_inset Formula $x'$
+\end_inset
+
+ from a random input ( sampled from a prior distribution 
+\begin_inset Formula $p_{z}(Z)$
+\end_inset
+
+ ) 
+\begin_inset Formula $z$
+\end_inset
+
+.
+ Generally, the prior distribution 
+\begin_inset Formula $p_{z}(Z)$
+\end_inset
+
+ is chosen to be uniformly random.
+ This is to ensure sufficient variety in the inputs passed to the generator.
+ In other words, these inputs are 
+\begin_inset Quotes eld
+\end_inset
+
+codes
+\begin_inset Quotes erd
+\end_inset
+
+ for the input which the network sees.
+ More variety in the code, easier to learn the true distribution's manifold.
+ Also, more variety in the code also results in a rich variety in the samples
+ generated from the network.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Consider a training data point 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ The discriminator is another neural network which takes 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $x'$
+\end_inset
+
+ ( true and fake points as inputs ) and scores the data point based on whether
+ it is sampled from the distribution 
+\begin_inset Formula $p_{true}(x)$
+\end_inset
+
+ i.e ideally 
+\begin_inset Formula $x$
+\end_inset
+
+ should get a score of 
+\begin_inset Formula $1$
+\end_inset
+
+ and 
+\begin_inset Formula $x'$
+\end_inset
+
+ should get a score of 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ Based on these constraints the network is trained and weights of both 
+\begin_inset Formula $G$
+\end_inset
+
+ and 
+\begin_inset Formula $D$
+\end_inset
+
+ are learnt using gradient decent.
+ During the course of training, the generator 
+\begin_inset Formula $G$
+\end_inset
+
+ learns the distribution 
+\begin_inset Formula $p_{g}(X)$
+\end_inset
+
+ and tries to fool 
+\begin_inset Formula $D$
+\end_inset
+
+ by generating data points indistinguishable from real data points.
+ Simultaneously, 
+\begin_inset Formula $D$
+\end_inset
+
+ learns to classify the given data point as real or fake, in turn resulting
+ in training a better 
+\begin_inset Formula $G$
+\end_inset
+
+.
+ So, 
+\begin_inset Formula $G$
+\end_inset
+
+ and 
+\begin_inset Formula $D$
+\end_inset
+
+ play a
+\series bold
+ minimax game 
+\series default
+with a value function 
+\begin_inset Formula $V(G,\,D)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+min\,\, & max\,V(G,\,D)=E_{x\sim p_{data}(X)}[logD(x)]+E_{z\sim p_{z}(z)}[log(1-D(G(z)))]\\
+G\,\,\,\,\, & \,\,D
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Ultimately, if 
+\begin_inset Formula $G,D$
+\end_inset
+
+ has sufficient representative power, 
+\begin_inset Formula $G$
+\end_inset
+
+ will learn the distribution 
+\begin_inset Formula $p_{data}(X)$
+\end_inset
+
+ so well that, 
+\begin_inset Formula $D(G(z))=D(x)=0.5$
+\end_inset
+
+.
+ Once learnt, new samples can be generated by sampling 
+\begin_inset Formula $z$
+\end_inset
+
+ from 
+\begin_inset Formula $p_{z}(Z)$
+\end_inset
+
+ and feedforwarding it through the generator which generates a sample 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Altering the prior distribution 
+\begin_inset Formula $p_{z}(Z)$
+\end_inset
+
+, leads to different solution and hence different types of samples are generated.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Criticism
+\end_layout
+
+\begin_layout Itemize
+Convergence of GANs
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+One possible issue with GANs is even though theoritical convergence is proven,
+ practically training them is difficult.
+ The loss functions for the discriminator ( 
+\begin_inset Formula $L_{D}$
+\end_inset
+
+ ) and the generator ( 
+\begin_inset Formula $L_{G}$
+\end_inset
+
+ ) are chosen differently in such a way that eventually 
+\begin_inset Formula $p_{g}(X)=p_{d}(X)=p_{true}(X)$
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $p_{d}(X)$
+\end_inset
+
+ refers to the distribution assigned by the discriminator.
+\end_layout
+
+\begin_layout Itemize
+Such a fixed point exists only when both 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\series bold
+
+\begin_inset Formula $G$
+\end_inset
+
+ 
+\series default
+have 
+\series bold
+enough capacity
+\series default
+ to model the distribution.
+ The theoritical proof assumes 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\begin_inset Formula $G$
+\end_inset
+
+ having infinite capacity.
+\end_layout
+
+\begin_layout Itemize
+Even if it exists, converging to that point is tough because both 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\begin_inset Formula $G$
+\end_inset
+
+ are parallely learnt.
+ Weight updates for 
+\begin_inset Formula $\theta_{g}$
+\end_inset
+
+ can reduce 
+\begin_inset Formula $L_{G}$
+\end_inset
+
+ but increase 
+\begin_inset Formula $L_{D}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The optimal solution is a case of 
+\series bold
+Nash equilibria
+\series default
+ where the solution 
+\begin_inset Formula $(\theta_{g},\theta_{d})$
+\end_inset
+
+ exists such that 
+\begin_inset Formula $L_{G}$
+\end_inset
+
+ is minimum w.r.t 
+\begin_inset Formula $\theta_{g}$
+\end_inset
+
+ and 
+\begin_inset Formula $L_{D}$
+\end_inset
+
+ is minimum w.r.t 
+\begin_inset Formula $\theta_{d}$
+\end_inset
+
+.
+ Finding this point is 
+\series bold
+extremely tough
+\series default
+ as the cost function is 
+\series bold
+non-convex
+\series default
+ and the number of 
+\series bold
+dimensions
+\series default
+ is 
+\series bold
+huge
+\series default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Lack of explicit representation for 
+\begin_inset Formula $p_{g}(X)$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Since, the generator learns the mapping from 
+\begin_inset Formula $p_{z}(z)$
+\end_inset
+
+ to 
+\begin_inset Formula $x$
+\end_inset
+
+ and there is 
+\series bold
+no closed form
+\series default
+ parametric representation for the learnt distribution, 
+\series bold
+interpretability
+\series default
+ still poses a problem.
+\end_layout
+
+\begin_layout Itemize
+As a result, the generator proves to be a black box where you can sample
+ data points but can't mathematically assess/utilise its understanding.
+\end_layout
+
+\begin_layout Itemize
+Having a closed form solution will be useful in many situations where better
+ models can be obtained by combining the generator with some other framework,
+ thus leading to better solutions.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Training GANs
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Having spoken about convergence, training GANs is yet another art in itself.
+ Since, both the networks are trained simultaneously, there is no guarantee
+ that generated samples become better over time.
+\end_layout
+
+\begin_layout Itemize
+This is because, discriminative networks recognizes classes 
+\series bold
+without understanding human perceptible attributes
+\series default
+ of it.
+ As a result, generated samples become better in fooling the discriminator
+ and not in understanding the underlying distribution.
+\end_layout
+
+\begin_layout Itemize
+Optimal solutions can be obtained using different loss functions.
+ Energy based Generative Adversarial Network ( EBGAN ) is a modification
+ of GAN where the discriminator assigns low energy to regions near the data
+ manifold and higher energy to generated samples.
+ When the discriminator behaves as an energy function, it opens up multiple
+ architectures to explore and other loss functions.
+ It uses an Auto-encoder framework for the discriminator as it is known
+ to learn energy manifolds quite well.
+\end_layout
+
+\begin_layout Itemize
+Not only that, uneven training of discriminator/generator still poses a
+ problem.
+ Sometimes, the generator overtrains the discriminator.
+ This results in an extremely powerful discriminator and puts the generator
+ into a fix where it can't learn much.
+ Methods like 
+\series bold
+feature matching
+\series default
+, where expectations of hidden layer's activations of discriminator is compared
+ seem to solve this issue.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Comments about images generated by GANs
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+GAN has to produce a complex image to fool the discriminator.
+ Based on what manifold the discriminator learns, the generator obtained
+ will be of different types.
+\end_layout
+
+\begin_layout Itemize
+If the discriminator is a deep neural network and we have a mixed dataset
+ ( like say CIFAR-10, where individual pixels take a variety of values ),
+ then the generator learns to generate samples which look fuzzy/blurry.
+ Proper finetuning is needed to avoid such generators.
+\end_layout
+
+\begin_layout Itemize
+This is because the discriminator gets easily fooled by blurry images.
+ Changes to loss functions and parameter tuning can result in better solutions.
+\end_layout
+
+\begin_layout Itemize
+On the other hand, considering datasets like MNIST ( where pixels can take
+ binary values ), the generated samples are not blurry but there are lot
+ of dots/holes in the output even though the training data has continuous
+ strokes.
+\end_layout
+
+\begin_layout Itemize
+Modifications were suggested in future papers like,
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Laplace Pyramid Generative Adversarial Networks ( LPGAN )
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Uses a Convolutional neural network as a generator.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sequence of generators
+\series default
+ are trained that improve resolution of the image, refining images from
+ coarse to fine fashion, thus building the 
+\series bold
+Laplace pyramid
+\series default
+.
+\end_layout
+
+\begin_layout Itemize
+Each GAN is conditioned on the previous output ( the lower resolution one
+ ) and takes a random input to generate a higher resolution image.
+\end_layout
+
+\begin_layout Itemize
+Generates 
+\series bold
+clearer
+\series default
+ pictures ( non-blurry ).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Deep Convolutional Generative Adversarial Networks ( DCGAN )
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A deep convolutional neural network is used as the generator.
+\end_layout
+
+\begin_layout Itemize
+Generated data samples are more appealing and comparable to real data.
+\end_layout
+
+\begin_layout Itemize
+kNN classification of generated data points has better accuracy than that
+ obtained from the naive-GAN, which indirectly shows that DCGAN 
+\series bold
+learns 
+\begin_inset Formula $p_{true}(X)$
+\end_inset
+
+ better
+\series default
+.
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout Section
+Future work
+\end_layout
+
+\begin_layout Itemize
+Generating discrete data
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+It is difficult to generate discrete data like text using a GAN.
+ Discrete data generation using RNNs is possible using one-hot encodings
+ and a hidden state with sufficient capacity.
+ On the other hand, using GAN to model sequential data is not straightforward.
+ This is because an RNN has tied parameters which compresses/represents
+ an arbitrary length sequence as a fixed length vector.
+ But a GAN cannot do that in a straight forward.
+\end_layout
+
+\begin_layout Itemize
+It is a topic of ongoing research and not many articles have been published
+ till now.
+\end_layout
+
+\begin_layout Itemize
+Sequence of discrete elements can be modelled with GANs using 
+\series bold
+Gumbel-softmax
+\series default
+ distribution.
+ A Gumbel distribution has the PDF 
+\begin_inset Formula $f(x)=e^{-(x+e^{-x})}$
+\end_inset
+
+.
+ And the model uses 
+\begin_inset Formula $y=softmax(\frac{h+g}{\tau})$
+\end_inset
+
+ where 
+\begin_inset Formula $g$
+\end_inset
+
+ follows a Gumbel distribution with zero mean and unit scale and 
+\begin_inset Formula $h$
+\end_inset
+
+ is the penultimate layer's activation.
+ But the paper shows only a proof of concept by learning simple distributions
+ and explains the fact that sequence learning is possible in an adversarial
+ set up.
+\end_layout
+
+\begin_layout Itemize
+Recent advancements in GANs like 
+\series bold
+training using variational divergence maximisation
+\series default
+ and 
+\series bold
+density ratio estimation 
+\series default
+can be tweaked to fit sequential data and is a possible direction for future
+ research.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Efficiency improvements
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+As discussed in the previous section, even though GANs is a theoritically
+ sound concept, practically there is still scope for efficiency improvement.
+\end_layout
+
+\begin_layout Itemize
+Obvious choices for efficiency improvements include - different 
+\series bold
+loss functions
+\series default
+, different 
+\series bold
+frameworks
+\series default
+, different choice of 
+\series bold
+priors
+\series default
+ for 
+\begin_inset Formula $z$
+\end_inset
+
+ ( 
+\begin_inset Formula $p(z)$
+\end_inset
+
+ ).
+ Some of these have already been explored like - EBGANs ( different loss
+ function ), DCGANs ( CNN for generator ), but it proves to be a topic of
+ further research.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Avoiding poor solutions
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+One possible problem faced when training a GAN is 
+\series bold
+mode collapse
+\series default
+.
+ This occurs when the generator learns to produce samples which belong to
+ a very small portion of the manifold and as a result it generates samples
+ which are very similar in nature.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Unrolling
+\series default
+ the optimisation of the 
+\series bold
+discriminator
+\series default
+ seems to solve this problem but with increased computation cost.
+ It increases linearly with the number of steps we unroll.
+ Since, this number can be arbitrarily large, there is a need for better
+ ways to avoid mode-collapsed solutions.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Bridge with conditional models
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Recently, methods using pixel-wise conditioning ( like PixelCNN, PixelCNN++,
+ PixelRNN ) became popular in generative modelling.
+ Here, pixels are 
+\series bold
+generated sequentially
+\series default
+ and each pixel is conditioned on the 
+\series bold
+causal neighbourhood
+\series default
+ of it.
+ The joint distribution can be decomposed using chain rule as,
+\begin_inset Formula 
+\begin{align*}
+p(x)= & \prod_{i=1}^{n^{2}}p(x_{i}|x_{<i})
+\end{align*}
+
+\end_inset
+
+ where 
+\begin_inset Formula $x$
+\end_inset
+
+ is an 
+\begin_inset Formula $n\,x\,n$
+\end_inset
+
+ image.
+\end_layout
+
+\begin_layout Itemize
+Each conditional distribution is modelled using a CNN/LSTM and techniques
+ like 
+\series bold
+Markov assumption
+\series default
+, 
+\series bold
+parameter tying
+\series default
+ are used to improve efficiency.
+\end_layout
+
+\begin_layout Itemize
+Using the idea of 
+\series bold
+conditional modelling
+\series default
+ with GANs is also a topic for further research.
+ An obvious technique is to condition 
+\begin_inset Formula $G$
+\end_inset
+
+ on 
+\series bold
+class labels
+\series default
+ and hence explore how the model performs when two different class labels
+ are combined etc.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+nocite{*}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{thebibliography}{99}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+nocite{*}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1406.2661} Ian J.
+ Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
+ Sherjil Ozair, Aaron Courville and Yoshua Bengio.
+ 
+\backslash
+newblock Generative Adversarial Networks, 2014; 
+\backslash
+newblock arXiv:1406.2661.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1606.03498} Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki
+ Cheung, Alec Radford and Xi Chen.
+ 
+\backslash
+newblock Improved Techniques for Training GANs, 2016; 
+\backslash
+newblock arXiv:1606.03498.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1511.06434} Alec Radford, Luke Metz and Soumith Chintala.
+ 
+\backslash
+newblock Unsupervised Representation Learning with Deep Convolutional Generative
+ Adversarial Networks, 2015; 
+\backslash
+newblock arXiv:1511.06434.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1506.05751} Emily Denton, Soumith Chintala, Arthur Szlam and Rob
+ Fergus.
+ 
+\backslash
+newblock Deep Generative Image Models using a Laplacian Pyramid of Adversarial
+ Networks, 2015; 
+\backslash
+newblock arXiv:1506.05751.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1606.05908} Carl Doersch.
+ 
+\backslash
+newblock Tutorial on Variational Autoencoders, 2016; 
+\backslash
+newblock arXiv:1606.05908.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1512.09300} Anders Boesen Lindbo Larsen, Søren Kaae Sønderby, Hugo
+ Larochelle and Ole Winther.
+ 
+\backslash
+newblock Autoencoding beyond pixels using a learned similarity metric, 2015;
+ 
+\backslash
+newblock arXiv:1512.09300.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1606.03657} Xi Chen, Yan Duan, Rein Houthooft, John Schulman, Ilya
+ Sutskever and Pieter Abbeel.
+ 
+\backslash
+newblock InfoGAN: Interpretable Representation Learning by Information Maximizin
+g Generative Adversarial Nets, 2016; 
+\backslash
+newblock arXiv:1606.03657.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1609.03126} Junbo Zhao, Michael Mathieu and Yann LeCun.
+ 
+\backslash
+newblock Energy-based Generative Adversarial Network, 2016; 
+\backslash
+newblock arXiv:1609.03126.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1611.02163} Luke Metz, Ben Poole, David Pfau and Jascha Sohl-Dickstein.
+ 
+\backslash
+newblock Unrolled Generative Adversarial Networks, 2016; 
+\backslash
+newblock arXiv:1611.02163.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1601.06759} Aaron van den Oord, Nal Kalchbrenner and Koray Kavukcuoglu.
+ 
+\backslash
+newblock Pixel Recurrent Neural Networks, 2016; 
+\backslash
+newblock arXiv:1601.0675
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1611.04051} Matt J.
+ Kusner and José Miguel Hernández-Lobato.
+ 
+\backslash
+newblock GANS for Sequences of Discrete Elements with the Gumbel-softmax
+ Distribution, 2016; 
+\backslash
+newblock arXiv:1611.04051.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibitem{1604.08772} Karol Gregor, Frederic Besse, Danilo Jimenez Rezende,
+ Ivo Danihelka and Daan Wierstra.
+ 
+\backslash
+newblock Towards Conceptual Compression, 2016; 
+\backslash
+newblock arXiv:1604.08772.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{thebibliography}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+nocite{*}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

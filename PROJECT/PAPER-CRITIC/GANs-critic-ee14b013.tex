@@ -1,0 +1,220 @@
+%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[12pt,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=1cm,bmargin=1cm,lmargin=1cm,rmargin=1cm}
+\usepackage{amsmath}
+\usepackage{babel}
+\begin{document}
+
+\title{Reinforcement learning ( CS6700 )\\
+Report - Generative adversarial networks}
+
+\author{Aravind S\\
+EE14B013}
+
+\date{27th Jan. 2017}
+\maketitle
+\begin{abstract}
+With the advent of improved computing resources, deep learning community
+started focussing on generative modelling. Discriminative models are
+those where the goal is to predict the output given some representation
+of the input i.e you model the distribution \textbf{$p(y|x)$}. Generative
+models, on the other hand model the joint distribution of the (input,
+output) from which the data is sampled from i.e $p(x,y)$ is learnt.
+Recently, adversarial set ups became popular and are an active area
+of research. Generative adversarial networks is a framework where
+a generative model is learnt by interacting with a discriminator in
+the aim that after sufficient epochs of training, the generative model
+captures the distribution from which the training data is sampled.
+\end{abstract}
+
+\section{Summary}
+
+In this framework, 2 models are used - a Generator G and a Discriminator
+D. Both of them are neural networks. Say, the data is obtained from
+a true distribution $p_{true}(X)$ and our goal is to make sure that
+the generator G learns this distribution as much as possible. Now
+the training data is samples from $p_{true}(X)$. The role of the
+generator ( a deep neural net ) is to generate $x'$ from a random
+input ( sampled from a prior distribution $p_{z}(Z)$ ) $z$. Consider
+a training data point $x$.\\
+\\
+The discriminator is another neural network which takes $x$ and $x'$
+( true and fake points as inputs ) and scores the data point based
+on whether it is sampled from the distribution $p_{true}(x)$ i.e
+ideally $x$ should get a score of $1$ and $x'$ should get a score
+of $0$. Based on these constraints the network is trained and weights
+of both $G$ and $D$ are learnt using Backpropagation algorithm.
+During the course of training, the generator $G$ learns the distribution
+$p_{g}(X)$ and tries to fool $D$ by generating data points indistinguishable
+from real data points. Simultaneously, $D$ learns to classify the
+given data point as real or fake, in turn resulting in training a
+better $G$. So, $G$ and $D$ play a minimax game with a value function
+$V(G,\,D)$.
+
+\begin{align*}
+min & max\,V(G,\,D)=E_{x\sim p_{data}(X)}[logD(x)]+E_{z\sim p_{z}(z)}[log(1-D(G(z)))]\\
+G\,\, & \,\,D
+\end{align*}
+\\
+Ultimately, if $G,D$ has sufficient representative power, $G$ will
+learn the distribution $p_{data}(X)$ so well that, $D(G(z))=D(x)=0.5$. 
+
+\section{Shortcomings}
+\begin{itemize}
+\item Convergence of GANs
+\begin{itemize}
+\item One possible issue with GANs is even though theoritical convergence
+is proven, practically training them is difficult. The loss functions
+for the discriminator ( $L_{D}$ ) and the generator ( $L_{G}$ )
+are chosen differently in such a way that eventually $p_{g}(X)=p_{d}(X)=p_{true}(X)$.
+Here $p_{d}(X)$ refers to the distribution assigned by the discriminator.
+\item Such a fixed point exists only when both $D$ and \textbf{$G$ }have
+enough capacity to model the distribution. The theoritical proof assumes
+$D$ and $G$ having infinite capacity.
+\item Even if it exists, converging to that point is tough because both
+$D$ and $G$ are parallely learnt. Weight updates for $\theta_{g}$
+can reduce $L_{G}$ but increase $L_{D}$.
+\item The optimal solution is a case of Nash equilibria where the solution
+$(\theta_{g},\theta_{d})$ exists such that $L_{G}$ is minimum w.r.t
+$\theta_{g}$ and $L_{D}$ is minimum w.r.t $\theta_{d}$. Finding
+this point is extremely tough as the cost function is non-convex and
+the number of dimensions is huge.
+\end{itemize}
+\item Training GANs
+\begin{itemize}
+\item Having spoken about convergence, training GANs is yet another art
+in itself. Since, both the networks are trained simultaneously, there
+is no guarantee that generated samples become better over time.
+\item This is because, discriminative networks recognizes classes without
+understanding human perceptible attributes of it. As a result, generated
+samples become better in fooling the discriminator and not in understanding
+the underlying distribution.
+\item Optimal solutions can be obtained using different loss functions.
+Energy based Generative Adversarial Network ( EBGAN ) is a modification
+of GAN where the discriminator assigns low energy to regions near
+the data manifold and higher energy to generated samples. When the
+discriminator behaves as an energy function, it opens up multiple
+architectures to explore and other loss functions. It uses an Auto-encoder
+framework for the discriminator as it is known to learn energy manifolds
+quite well.
+\end{itemize}
+\item Comments about images generated by GANs
+\begin{itemize}
+\item GAN has to produce a complex image to fool the discriminator. Based
+on what manifold the discriminator learns, the generator obtained
+will be of different types.
+\item If the discriminator is a deep neural network and we have a mixed
+dataset ( like say CIFAR-10, where individual pixels take a variety
+of values ), then the generator learns to generate samples which look
+fuzzy/blurry. Proper finetuning is needed to avoid such generators.
+\item This is because the discriminator gets easily fooled by blurry images.
+Changes to loss functions and parameter tuning can result in better
+solutions.
+\item On the other hand, considering datasets like MNIST ( where pixels
+can take binary values ), the generated samples are not blurry but
+there are lot of dots/holes in the output even though the training
+data has continuous strokes.
+\item Modifications were suggested in future papers like,
+\begin{itemize}
+\item Laplace Pyramid Generative Adversarial Networks ( LPGAN )
+\begin{itemize}
+\item Uses a Convolutional neural network as a generator.
+\item Sequence of generators are trained that improve resolution of the
+image, refining images from coarse to fine fashion, thus building
+the Laplace pyramid.
+\item Each GAN is conditioned on the previous output ( the lower resolution
+one ) and takes a random input to generate a higher resolution image.
+\item Generates clearer pictures ( non-blurry ).
+\end{itemize}
+\item Deep Convolutional Generative Adversarial Networks ( DCGAN )
+\begin{itemize}
+\item A deep convolutional neural network is used as the generator.
+\item Generated data samples are more appealing and comparable to real data.
+\item kNN classification of generated data points has better accuracy than
+that obtained from the naive-GAN, which indirectly shows that DCGAN
+learns $p_{true}(X)$ better.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\section{Future work}
+\begin{itemize}
+\item Generating discrete data
+\begin{itemize}
+\item It is difficult to generate discrete data like text using a GAN. Discrete
+data generation using RNNs is possible using one-hot encodings and
+a hidden state with sufficient capacity. On the other hand, using
+GAN to model sequential data is not straightforward. This is because
+an RNN has tied parameters which compresses/represents an arbitrary
+length sequence as a fixed length vector. But a GAN cannot do that
+in a straight forward.
+\item It is a topic of ongoing research and not many articles have been
+published till now.
+\item Sequence of discrete elements can be modelled with GANs using Gumbel-softmax
+distribution. A Gumbel distribution has the PDF $f(x)=e^{-(x+e^{-x})}$.
+And the model uses $y=softmax(\frac{h+g}{\tau})$ where $g$ follows
+a Gumbel distribution with zero mean and unit scale and $h$ is the
+penultimate layer's activation. But the paper shows only a proof of
+concept by learning simple distributions and explains the fact that
+sequence learning is possible in an adversarial set up.
+\item Recent advancements in GANs like \textbf{training using variational
+divergence maximisation} and \textbf{density ratio estimation }can
+be tweaked to fit sequential data and is a possible direction for
+future research.
+\end{itemize}
+\item Efficiency improvements
+\begin{itemize}
+\item As discussed in the previous section, even though GANs is a theoritically
+sound concept, practically there is still scope for efficiency improvement.
+\item Obvious choices for efficiency improvements include - different loss
+functions, different frameworks, different choice of priors for $z$
+( $p(z)$ ). Some of these have already been explored like - EBGANs
+( different loss function ), DCGANs ( CNN for generator ), but it
+proves to be a topic of further research.
+\end{itemize}
+\item Avoiding poor solutions
+\begin{itemize}
+\item One possible problem faced when training a GAN is \textbf{mode collapse}.
+This occurs when the generator learns to produce samples which belong
+to a very small portion of the manifold and as a result it generates
+samples which are very similar in nature.
+\item Unrolling the optimisation of the discriminator seems to solve this
+problem but with increased computation cost. It increases linearly
+with the number of steps we unroll. Since, this number can be arbitrarily
+large, there is a need for better ways to avoid mode-collapsed solutions.
+\end{itemize}
+\item Bridge with conditional models
+\begin{itemize}
+\item Recently, methods using pixel-wise conditioning ( like PixelCNN, PixelCNN++,
+PixelRNN ) became popular in generative modelling. Here, pixels are
+generated sequentially and each pixel is conditioned on the causal
+neighbourhood of it. The joint distribution can be decomposed using
+chain rule as,
+\begin{align*}
+p(x)= & \prod_{i=1}^{n^{2}}p(x_{i}|x_{<i})
+\end{align*}
+ where $x$ is an $n\,x\,n$ image.
+\item Each conditional distribution is modelled using a CNN/LSTM and techniques
+like Markov assumption, parameter tying are used to improve efficiency.
+\item Using the idea of conditional modelling with GANs is also a topic
+for further research. An obvious technique is to condition $G$ on
+class labels and hence explore how the model performs when two different
+class labels are combined etc.
+\end{itemize}
+\end{itemize}
+
+\section{References}
+
+\nocite{*}
+\begin{thebibliography}
+\nocite{*}
+\bibitem{1406.2661} Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville and Yoshua Bengio.
+\nocite{*}
+\end{thebibliography}
+\nocite{*}
+\end{document}
